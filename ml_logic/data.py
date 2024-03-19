@@ -65,5 +65,60 @@ def save_feedback(feedback:dict):
     return result
 
 
-def get_recommended_news(user_id:int):
-    pass
+def get_last_news_liked(user_id:int):
+    """
+    Return the last news like by an user
+    """
+    # Create credentials and client using the key file
+    credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
+    client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
+
+    params = [
+    bigquery.ScalarQueryParameter("user_id", "INT64", user_id),
+    ]
+
+    query = f"""
+    SELECT news_id
+    FROM {REVIEW_TABLE_ID}
+    WHERE user_id = @user_id
+    AND (like_the_news = 1 OR good_recommendation = 1)
+    ORDER BY updated_date DESC
+    LIMIT 1
+    """
+
+    job_config = bigquery.QueryJobConfig()
+    job_config.query_parameters = params
+
+    query_job = client.query(query, job_config=job_config)
+
+    result = query_job.result().to_dataframe()
+
+    return result
+
+
+def db_to_dataframe(bq_client, nb_rows=None):
+    """
+    Retrieve data from big query with <nb_rows> and return it in DataFrame
+    """
+    # Create credentials and client using the key file
+    # credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
+    # client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
+
+    # if nb_rows is not None:
+    #     params = [bigquery.ScalarQueryParameter("nb_rows", "INT64", nb_rows)]
+    #     limit_clause = "LIMIT @nb_rows"
+    # else:
+    #     limit_clause = ""
+
+    query = """SELECT *
+                FROM the-mdr-project.live_mdr.news_dataset
+            """ #{limit_clause}
+
+    job_config = bigquery.QueryJobConfig()
+    # if nb_rows is not None:
+    #     job_config.query_parameters = params
+
+    query_job = bq_client.query(query, job_config=job_config)
+
+    result = query_job.result().to_dataframe()
+    return result

@@ -1,10 +1,19 @@
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from ml_logic.data import get_random_news, save_feedback
-from ml_logic.params import USER_ID, CATEGORIES_ID
+from google.cloud import bigquery
+from google.oauth2 import service_account
 
+from ml_logic.data import get_random_news, save_feedback, db_to_dataframe, get_last_news_liked
+from ml_logic.params import USER_ID, CATEGORIES_ID, CREDENTIAL_PATH
+from ml_logic.model import Model
+
+def get_bigquery_client():
+    # Charger les informations d'identification depuis le fichier de clé JSON
+    credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
+    # Initialiser et retourner le client BigQuery
+    return bigquery.Client(credentials=credentials, project=credentials.project_id)
 
 app = FastAPI()
 #app.state.model =load_model()
@@ -47,11 +56,21 @@ def save_one_learning(feedback:dict):
 
 
 @app.get("/get_one_news_to_evaluate")
-def get_one_news_to_evaluate(user_id:int):
+def get_one_news_to_evaluate(user_id:int, bq_client: bigquery.Client = Depends(get_bigquery_client)):
     """
     Diplay a news (a prediction) that the user is supposed to like.
     """
-    pass
+    # Retrieve BQ data in Dataframe and cleaning it
+    news_df = db_to_dataframe(bq_client)
+    news_df = news_df.drop_duplicates()
+
+    model = Model(news_df)
+
+    last_news_liked = get_last_news_liked(user_id)
+    neigh_ind = model.get_news_prediction(last_news_liked.title , 10)
+
+    neigh_news = news_df.iloc[neigh_ind].to_dict()
+    return neigh_news
 
 
 @app.get("/save_one_evaluation")
@@ -65,8 +84,6 @@ def save_one_evaluation(feedback:dict):
         return {"message": "Feedback saved successfully"}
     else:
         raise HTTPException(status_code=500, detail="Failed to save feedback")
-
-
 
 
 @app.get("/")
