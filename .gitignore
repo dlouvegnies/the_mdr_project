@@ -1,6 +1,6 @@
 raw_data/
 credentials/
-models/
+models/*.pkl
 .env
 
 
