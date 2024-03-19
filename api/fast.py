@@ -2,6 +2,9 @@ import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from ml_logic.data import get_random_news
+from ml_logic.params import USER_ID, CATEGORIES_ID
+
 
 app = FastAPI()
 #app.state.model =load_model()
@@ -25,8 +28,8 @@ def get_one_news_to_learn(user_id:int):
     """
     Diplay a news to know if the user like it or not, in order to learn his tastes
     """
-    #Your code here
-    pass
+    news = get_random_news(user_id=USER_ID, categories=CATEGORIES_ID, nb_news=1).to_dict()
+    return news
 
 
 
