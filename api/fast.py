@@ -1,8 +1,8 @@
 import pandas as pd
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from ml_logic.data import get_random_news
+from ml_logic.data import get_random_news, save_feedback
 from ml_logic.params import USER_ID, CATEGORIES_ID
 
 
@@ -33,14 +33,17 @@ def get_one_news_to_learn(user_id:int):
 
 
 
-@app.get("/save_one_learning")
-def save_one_learning(user_id:int, news_id:int, value:int):
+@app.post("/save_one_learning")
+def save_one_learning(feedback:dict):
     """
     Save, for the user, his taste for this news
     value = 0 or 1
     """
-    #Your code here
-    pass
+    result = save_feedback(feedback)
+    if result:
+        return {"message": "Feedback saved successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to save feedback")
 
 
 @app.get("/get_one_news_to_evaluate")
@@ -52,13 +55,16 @@ def get_one_news_to_evaluate(user_id:int):
 
 
 @app.get("/save_one_evaluation")
-def save_one_evaluation(user_id:int, news_id:int, value:int):
+def save_one_evaluation(feedback:dict):
     """
     Save, for the user, if the prediction to like this news is right or wrong
     value = 0 or 1
     """
-    #Your code here
-    pass
+    result = save_feedback(feedback)
+    if result:
+        return {"message": "Feedback saved successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to save feedback")
 
 
 
