@@ -4,3 +4,6 @@ fastapi
 google-cloud-bigquery[pandas]
 nltk
 uvicorn
+sklearn
+numpy
+nltk
