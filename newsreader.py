@@ -3,8 +3,9 @@ import pandas as pd
 
 # User credentials
 USER_CREDENTIALS = {
-    "user1": "password1",
-    "user2": "password2"
+    "Mathieu": "LeWagon1",
+    "Raphael": "LeWagon2",
+    "Denis": "LeWagon3"
 }
 
 # Create a sample dataframe
@@ -17,8 +18,8 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Index to track the current news
-index = 0
+# Global variable to track current index
+current_index = 0
 
 # Function to show news
 def show_news(index):
@@ -30,38 +31,26 @@ def show_news(index):
     st.write("Link:")
     st.write(df['Link'][index])
 
-# Function to authenticate user
-def authenticate(username, password):
-    if username in USER_CREDENTIALS:
-        if USER_CREDENTIALS[username] == password:
-            return True
-    return False
-
 # Main function
 def main():
-    st.title("User Authentication")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if authenticate(username, password):
-            st.success("Login successful!")
-            st.title("THE MDR PROJECT")
-            st.markdown("---")
-            st.write("")
-            show_news(index)
+    global current_index
 
-            col1, col2 = st.columns(2)
-            with col1:
-                thumb_up = st.button("👍 I'm interested")
-            with col2:
-                thumb_down = st.button("👎 I'm not interested")
+    st.title("THE MDR PROJECT")
 
-            if thumb_up:
-                st.success("You were interested in this news.")
-            elif thumb_down:
-                st.error("You weren't interested in this news.")
-        else:
-            st.error("Authentication failed. Please try again.")
+    show_news(current_index)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        thumb_up = st.button("👍 I'm interested")
+    with col2:
+        thumb_down = st.button("👎 I'm not interested")
+
+    if thumb_up:
+        st.success("You were interested in this news.")
+        current_index = (current_index + 1) % len(df)
+    elif thumb_down:
+        st.error("You weren't interested in this news.")
+        current_index = (current_index + 1) % len(df)
 
 # Run the app
 if __name__ == "__main__":
