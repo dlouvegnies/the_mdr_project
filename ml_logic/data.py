@@ -3,7 +3,7 @@ import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID
+from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID, NEWS_TABLE_ID
 
 def get_random_news(user_id:int, categories:list, nb_news:int=20):
     """
@@ -78,11 +78,13 @@ def get_last_news_liked(user_id:int):
     ]
 
     query = f"""
-    SELECT news_id
-    FROM {REVIEW_TABLE_ID}
-    WHERE user_id = @user_id
-    AND (like_the_news = 1 OR good_recommendation = 1)
-    ORDER BY updated_date DESC
+    SELECT n.*
+    FROM {REVIEW_TABLE_ID} r
+    JOIN {NEWS_TABLE_ID} n
+    ON r.news_id = n.news_id
+    WHERE r.user_id = @user_id
+    AND (r.like_the_news = TRUE OR r.good_recommendation = TRUE)
+    ORDER BY r.updated_date DESC
     LIMIT 1
     """
 
@@ -96,29 +98,30 @@ def get_last_news_liked(user_id:int):
     return result
 
 
-def db_to_dataframe(bq_client, nb_rows=None):
+def db_to_dataframe(nb_rows=None):
     """
     Retrieve data from big query with <nb_rows> and return it in DataFrame
     """
     # Create credentials and client using the key file
-    # credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
-    # client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
+    credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
+    client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
 
-    # if nb_rows is not None:
-    #     params = [bigquery.ScalarQueryParameter("nb_rows", "INT64", nb_rows)]
-    #     limit_clause = "LIMIT @nb_rows"
-    # else:
-    #     limit_clause = ""
+    if nb_rows is not None:
+        params = [bigquery.ScalarQueryParameter("nb_rows", "INT64", nb_rows)]
+        limit_clause = "LIMIT @nb_rows"
+    else:
+        limit_clause = ""
 
-    query = """SELECT *
+    query = f"""SELECT *
                 FROM the-mdr-project.live_mdr.news_dataset
-            """ #{limit_clause}
+                {limit_clause}
+            """
 
     job_config = bigquery.QueryJobConfig()
-    # if nb_rows is not None:
-    #     job_config.query_parameters = params
+    if nb_rows is not None:
+        job_config.query_parameters = params
 
-    query_job = bq_client.query(query, job_config=job_config)
+    query_job = client.query(query, job_config=job_config)
 
     result = query_job.result().to_dataframe()
     return result

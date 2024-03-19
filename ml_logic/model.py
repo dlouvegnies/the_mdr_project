@@ -16,8 +16,8 @@ class Model:
     def __init__(self,X_df, column_name="title",max_size=25000):
         # Assign an attribute ".data" to all new instances of Order
         max_size=200000
-        self.vectorizer_filename = "../models/best_vectorizer.pkl"
-        self.model_filename = "../models/best_model.pkl"
+        self.vectorizer_filename = "models/best_vectorizer.pkl"
+        self.model_filename = "models/best_model.pkl"
         self.vectorizer = None
         self.model = self.load_model(X_df, column_name,max_size)
 

@@ -56,21 +56,23 @@ def save_one_learning(feedback:dict):
 
 
 @app.get("/get_one_news_to_evaluate")
-def get_one_news_to_evaluate(user_id:int, bq_client: bigquery.Client = Depends(get_bigquery_client)):
+def get_one_news_to_evaluate(user_id:int):
+    #bq_client: bigquery.Client = Depends(get_bigquery_client)
     """
     Diplay a news (a prediction) that the user is supposed to like.
     """
     # Retrieve BQ data in Dataframe and cleaning it
-    news_df = db_to_dataframe(bq_client)
+    news_df = db_to_dataframe(nb_rows=100000)
     news_df = news_df.drop_duplicates()
 
     model = Model(news_df)
 
     last_news_liked = get_last_news_liked(user_id)
-    neigh_ind = model.get_news_prediction(last_news_liked.title , 10)
+    neigh_ind = model.get_news_prediction(last_news_liked.title[0], 10)
+    neigh_news = news_df.iloc[neigh_ind[0]].to_dict()
+    return {'last_news': last_news_liked.to_dict(),
+            'neig_news': neigh_news}
 
-    neigh_news = news_df.iloc[neigh_ind].to_dict()
-    return neigh_news
 
 
 @app.get("/save_one_evaluation")
