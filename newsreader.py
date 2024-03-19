@@ -18,9 +18,6 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Global variable to track current index
-current_index = 0
-
 # Function to show news
 def show_news(index):
     st.subheader('News 📰')
@@ -33,9 +30,9 @@ def show_news(index):
 
 # Main function
 def main():
-    global current_index
-
     st.title("THE MDR PROJECT")
+
+    current_index = st.session_state.get('current_index', 0)
 
     show_news(current_index)
 
@@ -48,9 +45,13 @@ def main():
     if thumb_up:
         st.success("You were interested in this news.")
         current_index = (current_index + 1) % len(df)
+        st.session_state['current_index'] = current_index
+        st.experimental_rerun()
     elif thumb_down:
         st.error("You weren't interested in this news.")
         current_index = (current_index + 1) % len(df)
+        st.session_state['current_index'] = current_index
+        st.experimental_rerun()
 
 # Run the app
 if __name__ == "__main__":
