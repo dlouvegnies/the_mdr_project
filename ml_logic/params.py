@@ -14,6 +14,9 @@ USER_ID = int(os.environ.get('USER_ID'))
 
 MODE = os.environ.get('MODE')
 
+MODEL_NEWS_BATCH_SIZE = int(os.environ.get('MODEL_NEWS_BATCH_SIZE'))
+MODEL_MAX_FEATURES    = int(os.environ.get('MODEL_MAX_FEATURES'))
+
 ##################  CONSTANTS  #####################
 CREDENTIAL_PATH = os.path.join("credentials", CREDENTIAL_NAME)
 CATEGORIES_ID = [1, 3, 5]

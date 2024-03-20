@@ -9,13 +9,12 @@ from nltk.tokenize import word_tokenize
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
+from ml_logic.params import MODEL_NEWS_BATCH_SIZE,MODEL_MAX_FEATURES
 
 class Model:
 
-    def __init__(self,X_df, column_name="title",max_size=25000):
+    def __init__(self,X_df, column_name="title",max_size=MODEL_NEWS_BATCH_SIZE):
         # Assign an attribute ".data" to all new instances of Order
-        max_size=200000
         self.vectorizer_filename = os.path.join("models", "best_vectorizer.pkl")
         self.model_filename = os.path.join("models", "best_model.pkl")
         self.vectorizer = None
@@ -54,7 +53,7 @@ class Model:
             train_size = size
 
         #Step ONE : Vectorize
-        tf_idf_vectorizer = TfidfVectorizer(max_features=1000)
+        tf_idf_vectorizer = TfidfVectorizer(max_features=MODEL_MAX_FEATURES)
         print("TfidfVectorizer")
         test_list = []
         for i in range(0,train_size):
