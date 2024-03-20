@@ -10,7 +10,9 @@ USER_TABLE = os.environ.get('USER_TABLE')
 REVIEW_TABLE = os.environ.get('REVIEW_TABLE')
 
 CREDENTIAL_NAME = os.environ.get('CREDENTIAL_NAME')
-USER_ID = os.environ.get('USER_ID')
+USER_ID = int(os.environ.get('USER_ID'))
+
+MODE = os.environ.get('MODE')
 
 ##################  CONSTANTS  #####################
 CREDENTIAL_PATH = os.path.join("credentials", CREDENTIAL_NAME)
@@ -20,3 +22,6 @@ CAT_TABLE_ID=f'{GCP_PROJECT}.{GCP_DB}.{CAT_TABLE}'
 NEWS_TABLE_ID=f'{GCP_PROJECT}.{GCP_DB}.{NEWS_TABLE}'
 USER_TABLE_ID = f'{GCP_PROJECT}.{GCP_DB}.{USER_TABLE}'
 REVIEW_TABLE_ID = f'{GCP_PROJECT}.{GCP_DB}.{REVIEW_TABLE}'
+
+SERVICE_URL = 'https://mdr-gzqmj6mx3q-ew.a.run.app/'
+LOCAL_URL = 'http://127.0.0.1:8000'

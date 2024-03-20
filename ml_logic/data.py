@@ -3,7 +3,7 @@ import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID, NEWS_TABLE_ID
+from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID, NEWS_TABLE_ID, LOCAL_URL, SERVICE_URL
 
 def get_random_news(user_id:int, categories:list, nb_news:int=20):
     """
@@ -54,8 +54,10 @@ def save_feedback(feedback:dict):
     credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
     client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
 
+
     # Create DataFrame
     feedback_df = pd.DataFrame.from_dict(feedback)
+    feedback_df['updated_date'] = pd.to_datetime(feedback_df["updated_date"])
 
     # Save in BQ
     write_mode = 'WRITE_APPEND'
@@ -94,7 +96,9 @@ def get_last_news_liked(user_id:int):
     query_job = client.query(query, job_config=job_config)
 
     result = query_job.result().to_dataframe()
-
+    print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
+    print(result)
+    print('-------------------------')
     return result
 
 
@@ -124,4 +128,5 @@ def db_to_dataframe(nb_rows=None):
     query_job = client.query(query, job_config=job_config)
 
     result = query_job.result().to_dataframe()
+    print("DataFrame retrieve from BQ")
     return result
