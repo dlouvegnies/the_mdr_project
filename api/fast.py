@@ -64,7 +64,7 @@ def get_one_news_to_evaluate(user_id:int):
     Diplay a news (a prediction) that the user is supposed to like.
     """
     # Retrieve BQ data in Dataframe and cleaning it
-    data_filename = "raw_data/data_for_model.csv"
+    data_filename = os.path.join("raw_data","data_for_model.csv")
 
     if os.path.exists(data_filename):
         news_df = pd.read_csv(data_filename)

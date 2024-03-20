@@ -1,21 +1,46 @@
 import streamlit as st
 import requests
+from datetime import date
 import re
+from ml_logic.params import USER_ID
 
 
-def fetch_data():
-    user_id = 3
-    url = f"http://127.0.0.1:8000/get_one_news_to_learn?user_id={user_id}"
-    response = requests.get(url)
+def fetch_news_to_learn(user_id):
+    api_url = "http://127.0.0.1:8000/get_one_news_to_learn"
+    params = {'user_id': user_id}
+
+    response = requests.get(api_url, params=params)
+
     if response.status_code == 200:
         return response.json()
     else:
         st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
         return None
 
+def save_learning_feedback(news, feedback, user_id):
+    api_url = "http://127.0.0.1:8000/save_one_learning"
+
+    data = {
+        'review_id': [1],
+        'user_id': [user_id],
+        'news_id': [news['news_id']['0']],
+        'like_the_news': [feedback],
+        'good_recommendation': [None],
+        'updated_date': [None]
+    }
+
+    response = requests.post(api_url, data=data, json=data)
+    if response.status_code == 200:
+        pass
+    else:
+        st.error(f"Failed save data from API. Status code: {response.status_code}")
+    return response
+
+
 def clean_html_tags(text_html):
     texte_sans_html = re.sub(r'<[^>]+>', '', str(text_html))
     return texte_sans_html
+
 
 def show_news(data):
     if data:
@@ -37,7 +62,7 @@ def show_news(data):
 def main():
     st.title("THE MDR PROJECT")
 
-    data = fetch_data()
+    data = fetch_news_to_learn(USER_ID)
     if data:
         show_news(data)
 
@@ -49,9 +74,12 @@ def main():
 
         if thumb_up:
             st.success("You were interested in this news.")
+            test = save_learning_feedback(data, 1, USER_ID)
+            st.write(test)
 
         elif thumb_down:
             st.error("You weren't interested in this news.")
+            save_learning_feedback(data, 0, USER_ID)
 
 
 
