@@ -2,12 +2,14 @@ import streamlit as st
 import requests
 from datetime import datetime
 import re
+import os
 
-from ml_logic.params import USER_ID, SERVICE_URL
+from ml_logic.params import USER_ID, SERVICE_URL, MODE, LOCAL_URL
 
+base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
 def fetch_news_to_learn(user_id):
-    api_url = "http://127.0.0.1:8000/get_one_news_to_learn"
+    api_url = os.path.join(base_url, 'get_one_news_to_learn')
     params = {'user_id': user_id}
 
     response = requests.get(api_url, params=params)
@@ -19,7 +21,7 @@ def fetch_news_to_learn(user_id):
         return None
 
 def fetch_news_to_evaluate(user_id):
-    api_url = "http://127.0.0.1:8000/get_one_news_to_evaluate"
+    api_url = os.path.join(base_url, 'get_one_news_to_evaluate')
     params = {'user_id': user_id}
 
     response = requests.get(api_url, params=params)
@@ -32,7 +34,7 @@ def fetch_news_to_evaluate(user_id):
 
 
 def save_learning_feedback(news, feedback, user_id):
-    api_url = "http://127.0.0.1:8000/save_one_learning"
+    api_url = os.path.join(base_url, 'save_one_learning')
     today_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     data = {
@@ -52,7 +54,7 @@ def save_learning_feedback(news, feedback, user_id):
     return response
 
 def save_recommendation_feedback(news, feedback, user_id):
-    api_url = "http://127.0.0.1:8000/save_one_evaluation"
+    api_url = os.path.join(base_url, 'save_one_evaluation')
     today_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     data = {
@@ -91,6 +93,7 @@ def show_random_news(data):
             st.image("https://cdn.generationvoyage.fr/2020/04/journaux-britanniques-et-am%C3%A9ricains-768x421.jpg",width=400)
     else:
         st.error("No data available")
+
 
 def show_recommended_news(news):
         st.subheader('News 📰')

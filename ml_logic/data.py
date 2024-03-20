@@ -3,7 +3,7 @@ import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID, NEWS_TABLE_ID
+from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID, NEWS_TABLE_ID, LOCAL_URL, SERVICE_URL
 
 def get_random_news(user_id:int, categories:list, nb_news:int=20):
     """
