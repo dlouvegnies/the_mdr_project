@@ -54,8 +54,13 @@ def save_feedback(feedback:dict):
     credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
     client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
 
+
     # Create DataFrame
     feedback_df = pd.DataFrame.from_dict(feedback)
+    feedback_df['updated_date'] = pd.to_datetime(feedback_df["updated_date"])
+    print("------------------")
+    print(feedback_df.info())
+    print("------------------")
 
     # Save in BQ
     write_mode = 'WRITE_APPEND'
@@ -94,7 +99,7 @@ def get_last_news_liked(user_id:int):
     query_job = client.query(query, job_config=job_config)
 
     result = query_job.result().to_dataframe()
-
+    print(f"Last news liked by {user_id} retrieve")
     return result
 
 
@@ -124,4 +129,5 @@ def db_to_dataframe(nb_rows=None):
     query_job = client.query(query, job_config=job_config)
 
     result = query_job.result().to_dataframe()
+    print("DataFrame retrieve from BQ")
     return result
