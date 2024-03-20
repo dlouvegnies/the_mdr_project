@@ -4,9 +4,6 @@ from datetime import date
 import re
 from ml_logic.params import USER_ID
 
-from ml_logic.params import USER_ID
-
-
 def fetch_news_to_learn(user_id):
     api_url = "http://127.0.0.1:8000/get_one_news_to_learn"
     params = {'user_id': user_id}
@@ -31,7 +28,7 @@ def save_learning_feedback(news, feedback, user_id):
         "good_recommendation": [None],
         "updated_date": [today_date]
     }
-    print(data)
+
     response = requests.post(api_url, json=data)
     if response.status_code == 200:
         pass
@@ -39,11 +36,9 @@ def save_learning_feedback(news, feedback, user_id):
         st.error(f"Failed save data from API. Status code: {response.status_code}")
     return response
 
-
 def clean_html_tags(text_html):
     texte_sans_html = re.sub(r'<[^>]+>', '', str(text_html))
     return texte_sans_html
-
 
 def show_news(data):
     if data:
@@ -60,7 +55,6 @@ def show_news(data):
             st.image("https://cdn.generationvoyage.fr/2020/04/journaux-britanniques-et-am%C3%A9ricains-768x421.jpg",width=400)
     else:
         st.error("No data available")
-
 
 def main():
     st.title("THE MDR PROJECT")
@@ -84,6 +78,15 @@ def main():
             st.error("You weren't interested in this news.")
             save_learning_feedback(data, False, USER_ID)
 
+    st.sidebar.title("Navigation")
+    selection = st.sidebar.radio("Go to", ("Selection", "Recommendations"))
+
+    if selection == "Selection":
+        st.sidebar.write("You're viewing selected articles.")
+        
+
+    elif selection == "Recommendations":
+        st.sidebar.write("You're viewing recommendations.")
 
 
 if __name__ == "__main__":
