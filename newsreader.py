@@ -4,6 +4,8 @@ from datetime import date
 import re
 from ml_logic.params import USER_ID
 
+from ml_logic.params import USER_ID
+
 
 def fetch_news_to_learn(user_id):
     api_url = "http://127.0.0.1:8000/get_one_news_to_learn"
@@ -19,17 +21,18 @@ def fetch_news_to_learn(user_id):
 
 def save_learning_feedback(news, feedback, user_id):
     api_url = "http://127.0.0.1:8000/save_one_learning"
+    today_date = date.today().strftime("%Y-%m-%d")
 
     data = {
-        'review_id': [1],
-        'user_id': [user_id],
-        'news_id': [news['news_id']['0']],
-        'like_the_news': [feedback],
-        'good_recommendation': [None],
-        'updated_date': [None]
+        "review_id": [1],
+        "user_id": [user_id],
+        "news_id": [news['news_id']['0']],
+        "like_the_news": [feedback],
+        "good_recommendation": [None],
+        "updated_date": [today_date]
     }
-
-    response = requests.post(api_url, data=data, json=data)
+    print(data)
+    response = requests.post(api_url, json=data)
     if response.status_code == 200:
         pass
     else:
@@ -74,12 +77,12 @@ def main():
 
         if thumb_up:
             st.success("You were interested in this news.")
-            test = save_learning_feedback(data, 1, USER_ID)
+            test = save_learning_feedback(data, True, USER_ID)
             st.write(test)
 
         elif thumb_down:
             st.error("You weren't interested in this news.")
-            save_learning_feedback(data, 0, USER_ID)
+            save_learning_feedback(data, False, USER_ID)
 
 
 
