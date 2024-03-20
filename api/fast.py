@@ -79,7 +79,8 @@ def get_one_news_to_evaluate(user_id:int):
 
     last_news_liked = get_last_news_liked(user_id)
     neigh_ind = model.get_news_prediction(last_news_liked.title[0], 10)
-    neigh_news = news_df.iloc[neigh_ind[0]].iloc[1, :].to_frame().to_dict() # Retrieve the seconde near news
+    random_news_in_neigh_news = np.random.randint(0,10)
+    neigh_news = news_df.iloc[neigh_ind[0]].iloc[random_news_in_neigh_news, :].to_frame().to_dict() # Retrieve the seconde near news
     print('--------------------')
     print({'news': next(iter(neigh_news.values()))})
     print('--------------------')

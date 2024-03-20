@@ -58,9 +58,6 @@ def save_feedback(feedback:dict):
     # Create DataFrame
     feedback_df = pd.DataFrame.from_dict(feedback)
     feedback_df['updated_date'] = pd.to_datetime(feedback_df["updated_date"])
-    print("------------------")
-    print(feedback_df.info())
-    print("------------------")
 
     # Save in BQ
     write_mode = 'WRITE_APPEND'
@@ -99,7 +96,9 @@ def get_last_news_liked(user_id:int):
     query_job = client.query(query, job_config=job_config)
 
     result = query_job.result().to_dataframe()
-    print(f"Last news liked by {user_id} retrieve")
+    print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
+    print(result)
+    print('-------------------------')
     return result
 
 
