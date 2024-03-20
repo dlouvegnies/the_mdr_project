@@ -1,9 +1,21 @@
-streamlit
-pandas
+# API
 fastapi
-google-cloud-bigquery[pandas]
-nltk
 uvicorn
-scikit-learn
-numpy
+requests
+
+# Env variables
+python-dotenv
+
+# frontend
+streamlit
+
+#Model
 nltk
+scikit-learn
+
+#Basic
+pandas
+numpy
+
+#Cloud
+google-cloud-bigquery[pandas]
