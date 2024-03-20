@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import os
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -62,16 +64,26 @@ def get_one_news_to_evaluate(user_id:int):
     Diplay a news (a prediction) that the user is supposed to like.
     """
     # Retrieve BQ data in Dataframe and cleaning it
-    news_df = db_to_dataframe(nb_rows=100000)
-    news_df = news_df.drop_duplicates()
+    data_filename = "raw_data/data_for_model.csv"
+
+    if os.path.exists(data_filename):
+        news_df = pd.read_csv(data_filename)
+        news_df.replace(np.nan, None, inplace=True)
+    else:
+        news_df = db_to_dataframe(nb_rows=200000)
+        news_df = news_df.drop_duplicates()
+        news_df.replace(np.nan, None, inplace=True)
+        news_df.to_csv(data_filename, index=False)
 
     model = Model(news_df)
 
     last_news_liked = get_last_news_liked(user_id)
     neigh_ind = model.get_news_prediction(last_news_liked.title[0], 10)
-    neigh_news = news_df.iloc[neigh_ind[0]].to_dict()
-    return {'last_news': last_news_liked.to_dict(),
-            'neig_news': neigh_news}
+    neigh_news = news_df.iloc[neigh_ind[0]].iloc[1, :].to_frame().to_dict() # Retrieve the seconde near news
+    print('--------------------')
+    print({'news': next(iter(neigh_news.values()))})
+    print('--------------------')
+    return neigh_news
 
 
 
