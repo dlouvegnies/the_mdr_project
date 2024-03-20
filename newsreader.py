@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import re
 
 
 def fetch_data():
@@ -12,20 +13,23 @@ def fetch_data():
         st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
         return None
 
+def clean_html_tags(text_html):
+    texte_sans_html = re.sub(r'<[^>]+>', '', str(text_html))
+    return texte_sans_html
 
 def show_news(data):
     if data:
         st.subheader('News 📰')
         st.write(f"**Title:** {data['title']['0']}")
         st.write("**Description:**")
-        st.write(data['description']['0'])
+        st.write(clean_html_tags(data['description']['0']))
         st.write("**Link:**")
         st.write(data['link']['0'])
         st.write("**Image:**")
         if data['image']['0']:
             st.image(data['image']['0'], width=300)
         else:
-            st.image("https://media.licdn.com/dms/image/D4E35AQEwUlSCYwt1kw/profile-framedphoto-shrink_800_800/0/1708790535962?e=1711468800&v=beta&t=LJkfHloD1gxXPgbFR_aeY9M1SYqVsZhjyWkBTzEXY4w",width=200)
+            st.image("https://cdn.generationvoyage.fr/2020/04/journaux-britanniques-et-am%C3%A9ricains-768x421.jpg",width=400)
     else:
         st.error("No data available")
 
@@ -45,11 +49,11 @@ def main():
 
         if thumb_up:
             st.success("You were interested in this news.")
-            # You may add logic to handle user preference here
+
         elif thumb_down:
             st.error("You weren't interested in this news.")
-            # You may add logic to handle user preference here
 
-# Run the app
+
+
 if __name__ == "__main__":
     main()
