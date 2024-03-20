@@ -2,9 +2,10 @@ import streamlit as st
 import requests
 import re
 
+# streamlit run newsreader.py
 
 def fetch_data():
-    user_id = 3
+    user_id = 2
     url = f"http://127.0.0.1:8000/get_one_news_to_learn?user_id={user_id}"
     response = requests.get(url)
     if response.status_code == 200:

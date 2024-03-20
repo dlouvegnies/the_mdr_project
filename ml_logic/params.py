@@ -12,6 +12,9 @@ REVIEW_TABLE = os.environ.get('REVIEW_TABLE')
 CREDENTIAL_NAME = os.environ.get('CREDENTIAL_NAME')
 USER_ID = os.environ.get('USER_ID')
 
+MODEL_NEWS_BATCH_SIZE = int(os.environ.get('MODEL_NEWS_BATCH_SIZE'))
+MODEL_MAX_FEATURES    = int(os.environ.get('MODEL_MAX_FEATURES'))
+
 ##################  CONSTANTS  #####################
 CREDENTIAL_PATH = os.path.join("credentials", CREDENTIAL_NAME)
 CATEGORIES_ID = [1, 3, 5]

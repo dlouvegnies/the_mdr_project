@@ -18,7 +18,7 @@ def get_bigquery_client():
     return bigquery.Client(credentials=credentials, project=credentials.project_id)
 
 app = FastAPI()
-#app.state.model =load_model()
+
 
 """
 To launch the server :
