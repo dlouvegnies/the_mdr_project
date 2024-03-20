@@ -87,7 +87,7 @@ def get_one_news_to_evaluate(user_id:int):
 
 
 
-@app.get("/save_one_evaluation")
+@app.post("/save_one_evaluation")
 def save_one_evaluation(feedback:dict):
     """
     Save, for the user, if the prediction to like this news is right or wrong
