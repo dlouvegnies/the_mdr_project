@@ -37,7 +37,7 @@ def save_learning_feedback(news, feedback, user_id):
     today_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     data = {
-        "review_id": [1],
+        #"review_id": [1], NEEDED FOR BQ
         "user_id": [user_id],
         "news_id": [news['news_id']['0']],
         "like_the_news": [feedback],
@@ -58,7 +58,7 @@ def save_recommendation_feedback(news, feedback, user_id):
     today_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     data = {
-        "review_id": [1],
+        #"review_id": [1], NEEDED FOR BQ
         "user_id": [user_id],
         "news_id": [news['news_id']],
         "like_the_news": [None],

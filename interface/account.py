@@ -14,12 +14,12 @@ def login_page():
     password = st.text_input("Password", type="password")
     if st.button("Login"):
         api_url = os.path.join(base_url, 'login')
-        params = {'username': username,
+        data = {'username': username,
                   'password': password}
-        response = requests.get(api_url, params=params)
+        response = requests.post(api_url, json=data)
 
         if response.status_code == 200:
-            # AFFICHER LA PAGE TU ES LOGGE C'est bon
+            st.write("GOOOD")
             pass
         else:
             st.error(f"Failed to login from API. Status code: {response.status_code}")
@@ -33,9 +33,9 @@ def signup_page():
     password = st.text_input("Password", type="password")
     if st.button("Sign Up"):
         api_url = os.path.join(base_url, 'signup')
-        params = {'username': username,
+        data = {'username': username,
                   'password': password}
-        response = requests.get(api_url, params=params)
+        response = requests.post(api_url, params=data)
 
         if response.status_code == 200:
             # AFFICHER LA PAGE TU ES INSCRIT C'est bon

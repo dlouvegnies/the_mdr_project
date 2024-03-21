@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.data import get_random_news, save_feedback
+from ml_logic.data_mysql import get_random_news, save_feedback
 from ml_logic.params import USER_ID, CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked
 from ml_logic.user import create_user, connect_user
@@ -66,7 +66,7 @@ def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
     if categories is None:
         reco_by_last_liked = get_one_reco_by_last_liked(user_id)
     else:
-        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=ca)
+        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
     return reco_by_last_liked
 
 

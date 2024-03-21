@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from ml_logic.data import db_to_dataframe, get_last_news_liked
+from ml_logic.data_mysql import db_to_dataframe, get_last_news_liked
 from ml_logic.params import MODEL_NEWS_BATCH_SIZE, CATEGORIES_ID
 from ml_logic.model import Model
 
