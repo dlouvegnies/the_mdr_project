@@ -3,10 +3,41 @@ import requests
 from datetime import datetime
 import re
 import os
-
 from ml_logic.params import USER_ID, SERVICE_URL, MODE, LOCAL_URL
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
+def login_page():
+    st.title("Login")
+    # Formulaire de connexion
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        # Logique pour vérifier les informations d'identification et effectuer la connexion
+        pass
+
+# Fonction pour la page d'inscription
+def signup_page():
+    st.title("Sign Up")
+    # Formulaire d'inscription
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Sign Up"):
+        # Logique pour créer un nouveau compte utilisateur
+        pass
+
+# Fonction principale pour gérer la navigation entre les pages
+def main():
+    st.sidebar.title("Navigation")
+    selection = st.sidebar.radio("Go to", ("Login", "Sign Up"))
+
+    if selection == "Login":
+        login_page()
+    elif selection == "Sign Up":
+        signup_page()
+
+if __name__ == "__main__":
+    main()
+
 
 def fetch_news_to_learn(user_id):
     api_url = os.path.join(base_url, 'get_one_news_to_learn')
