@@ -4,9 +4,9 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 
 from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID,\
-NEWS_TABLE_ID, LOCAL_URL, SERVICE_URL, CATEGORIES_ID
+NEWS_TABLE_ID, CATEGORIES_ID
 
-def get_random_news(user_id:int, categories:list, nb_news:int=20):
+def get_random_news(user_id:int, categories:list=CATEGORIES_ID, nb_news:int=20):
     """
     Retrieve <nb_news> random news not viewed by <user_id> and
     in the <categories> list and return a DataFrame
@@ -68,9 +68,9 @@ def save_feedback(feedback:dict):
     return result
 
 
-def get_last_news_liked(user_id:int, categories:list=CATEGORIES_ID):
+def get_last_news_liked(user_id:int, categories:list):
     """
-    Return the last news like by an user
+    Return the last news like by an user for given categories
     """
     # Create credentials and client using the key file
     credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_PATH)
@@ -78,6 +78,7 @@ def get_last_news_liked(user_id:int, categories:list=CATEGORIES_ID):
 
     params = [
     bigquery.ScalarQueryParameter("user_id", "INT64", user_id),
+    bigquery.ArrayQueryParameter("category_ids", "INT64", categories),
     ]
 
     query = f"""
@@ -86,6 +87,7 @@ def get_last_news_liked(user_id:int, categories:list=CATEGORIES_ID):
     JOIN {NEWS_TABLE_ID} n
     ON r.news_id = n.news_id
     WHERE r.user_id = @user_id
+    AND category_id IN UNNEST(@category_ids)
     AND (r.like_the_news = TRUE OR r.good_recommendation = TRUE)
     ORDER BY r.updated_date DESC
     LIMIT 1
@@ -98,7 +100,7 @@ def get_last_news_liked(user_id:int, categories:list=CATEGORIES_ID):
 
     result = query_job.result().to_dataframe()
     print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
-    print(result.empty)
+    print(result)
     print('-------------------------')
     return result
 

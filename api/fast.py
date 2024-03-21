@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from google.cloud import bigquery
@@ -38,7 +38,7 @@ def get_one_news_to_learn(user_id:int):
     """
     Diplay a news to know if the user like it or not, in order to learn his tastes
     """
-    news = get_random_news(user_id=USER_ID, categories=CATEGORIES_ID, nb_news=1).to_dict()
+    news = get_random_news(user_id=USER_ID, nb_news=1).to_dict()
     return news
 
 
@@ -51,18 +51,22 @@ def save_one_learning(feedback:dict):
     """
     result = save_feedback(feedback)
     if result:
-        return {"message": "Feedback saved successfully"}
+        return {"message": "Feedback saved successfully",
+                "status_code": 200}
     else:
         raise HTTPException(status_code=500, detail="Failed to save feedback")
 
 
 @app.get("/get_one_news_to_evaluate")
-def get_one_news_to_evaluate(user_id:int):
+def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
     #bq_client: bigquery.Client = Depends(get_bigquery_client)
     """
     Diplay a news (a prediction) that the user is supposed to like.
     """
-    reco_by_last_liked = get_one_reco_by_last_liked(user_id)
+    if categories is None:
+        reco_by_last_liked = get_one_reco_by_last_liked(user_id)
+    else:
+        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
     return reco_by_last_liked
 
 
@@ -75,12 +79,12 @@ def save_one_evaluation(feedback:dict):
     """
     result = save_feedback(feedback)
     if result:
-        return {"message": "Feedback saved successfully"}
+        return {"message": "Feedback saved successfully",
+                "status_code": 200}
     else:
         raise HTTPException(status_code=500, detail="Failed to save feedback")
 
 
-# Endpoint pour gérer l'inscription
 @app.post("/signup")
 def signup(user:dict):
     # Logique pour vérifier si l'utilisateur existe déjà, sinon ajouter à la base de données
@@ -94,7 +98,7 @@ def signup(user:dict):
             return {"message": "User signed up successfully",
                     "status_code": 200}
 
-# Endpoint pour gérer la connexion
+
 @app.post("/login")
 def login(user:dict):
     result = connect_user(user)
