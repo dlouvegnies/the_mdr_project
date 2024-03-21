@@ -3,7 +3,8 @@ import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID, NEWS_TABLE_ID, LOCAL_URL, SERVICE_URL
+from ml_logic.params import GCP_PROJECT, CREDENTIAL_PATH, REVIEW_TABLE_ID,\
+NEWS_TABLE_ID, LOCAL_URL, SERVICE_URL, CATEGORIES_ID
 
 def get_random_news(user_id:int, categories:list, nb_news:int=20):
     """
@@ -67,7 +68,7 @@ def save_feedback(feedback:dict):
     return result
 
 
-def get_last_news_liked(user_id:int):
+def get_last_news_liked(user_id:int, categories:list=CATEGORIES_ID):
     """
     Return the last news like by an user
     """
@@ -97,7 +98,7 @@ def get_last_news_liked(user_id:int):
 
     result = query_job.result().to_dataframe()
     print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
-    print(result)
+    print(result.empty)
     print('-------------------------')
     return result
 

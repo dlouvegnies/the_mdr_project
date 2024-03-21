@@ -6,38 +6,6 @@ import os
 from ml_logic.params import USER_ID, SERVICE_URL, MODE, LOCAL_URL
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
-def login_page():
-    st.title("Login")
-    # Formulaire de connexion
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        # Logique pour vérifier les informations d'identification et effectuer la connexion
-        pass
-
-# Fonction pour la page d'inscription
-def signup_page():
-    st.title("Sign Up")
-    # Formulaire d'inscription
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Sign Up"):
-        # Logique pour créer un nouveau compte utilisateur
-        pass
-
-# Fonction principale pour gérer la navigation entre les pages
-def main():
-    st.sidebar.title("Navigation")
-    selection = st.sidebar.radio("Go to", ("Login", "Sign Up"))
-
-    if selection == "Login":
-        login_page()
-    elif selection == "Sign Up":
-        signup_page()
-
-if __name__ == "__main__":
-    main()
-
 
 def fetch_news_to_learn(user_id):
     api_url = os.path.join(base_url, 'get_one_news_to_learn')
@@ -83,6 +51,7 @@ def save_learning_feedback(news, feedback, user_id):
     else:
         st.error(f"Failed save data from API. Status code: {response.status_code}")
     return response
+
 
 def save_recommendation_feedback(news, feedback, user_id):
     api_url = os.path.join(base_url, 'save_one_evaluation')
@@ -185,26 +154,3 @@ def display_recommendation():
         elif thumb_down:
             st.error("You weren't interested in this news.")
             save_recommendation_feedback(news, False, USER_ID)
-
-
-def main():
-    st.sidebar.markdown(f"""
-    # The MDR Project
-    """)
-
-    st.sidebar.title("Navigation")
-    selection = st.sidebar.radio("Go to", ("Selection", "Recommendations"))
-
-    if selection == "Selection":
-        st.sidebar.write("You're viewing selected articles.")
-
-        display_learning()
-
-
-    elif selection == "Recommendations":
-        st.sidebar.write("You're viewing recommendations.")
-
-        display_recommendation()
-
-if __name__ == "__main__":
-    main()

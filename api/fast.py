@@ -1,44 +1,14 @@
-import pandas as pd
-import numpy as np
-import os
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.data import get_random_news, save_feedback, db_to_dataframe, get_last_news_liked
+from ml_logic.data import get_random_news, save_feedback
 from ml_logic.params import USER_ID, CATEGORIES_ID, CREDENTIAL_PATH
-from ml_logic.model import Model
+from ml_logic.recommendation import get_one_reco_by_last_liked
+from ml_logic.user import create_user, connect_user
 
-#########################################################
-app = FastAPI()
-
-# Modèle pour représenter les données utilisateur
-class User(BaseModel):
-    username: str
-    password: str
-
-# Liste fictive d'utilisateurs (à remplacer par une base de données réelle)
-users_db = []
-
-# Endpoint pour gérer l'inscription
-@app.post("/signup")
-def signup(user: User):
-    # Logique pour vérifier si l'utilisateur existe déjà, sinon ajouter à la base de données
-    users_db.append(user)
-    return {"message": "User signed up successfully"}
-
-# Endpoint pour gérer la connexion
-@app.post("/login")
-def login(user: User):
-    # Logique pour vérifier les informations d'identification de l'utilisateur
-    for u in users_db:
-        if u.username == user.username and u.password == user.password:
-            return {"message": "Login successful"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-
-###################################################################
 
 def get_bigquery_client():
     # Charger les informations d'identification depuis le fichier de clé JSON
@@ -46,7 +16,7 @@ def get_bigquery_client():
     # Initialiser et retourner le client BigQuery
     return bigquery.Client(credentials=credentials, project=credentials.project_id)
 
-#app = FastAPI()
+app = FastAPI()
 
 
 """
@@ -92,28 +62,8 @@ def get_one_news_to_evaluate(user_id:int):
     """
     Diplay a news (a prediction) that the user is supposed to like.
     """
-    # Retrieve BQ data in Dataframe and cleaning it
-    data_filename = os.path.join("raw_data", "data_for_model.csv")
-
-    if os.path.exists(data_filename):
-        news_df = pd.read_csv(data_filename)
-        news_df.replace(np.nan, None, inplace=True)
-    else:
-        news_df = db_to_dataframe(nb_rows=200000)
-        news_df = news_df.drop_duplicates()
-        news_df.replace(np.nan, None, inplace=True)
-        news_df.to_csv(data_filename, index=False)
-
-    model = Model(news_df)
-
-    last_news_liked = get_last_news_liked(user_id)
-    neigh_ind = model.get_news_prediction(last_news_liked.title[0], 10)
-    random_news_in_neigh_news = np.random.randint(0,10)
-    neigh_news = news_df.iloc[neigh_ind[0]].iloc[random_news_in_neigh_news, :].to_frame().to_dict() # Retrieve the seconde near news
-    print('--------------------')
-    print({'news': next(iter(neigh_news.values()))})
-    print('--------------------')
-    return neigh_news
+    reco_by_last_liked = get_one_reco_by_last_liked(user_id)
+    return reco_by_last_liked
 
 
 
@@ -129,6 +79,30 @@ def save_one_evaluation(feedback:dict):
     else:
         raise HTTPException(status_code=500, detail="Failed to save feedback")
 
+
+# Endpoint pour gérer l'inscription
+@app.post("/signup")
+def signup(user:dict):
+    # Logique pour vérifier si l'utilisateur existe déjà, sinon ajouter à la base de données
+    result = create_user(user)
+    match result:
+        case -1:
+            raise HTTPException(status_code=401, detail='This user already exist')
+        case 0:
+            raise HTTPException(status_code=401, detail='Account creation failed')
+        case 1:
+            return {"message": "User signed up successfully",
+                    "status_code": 200}
+
+# Endpoint pour gérer la connexion
+@app.post("/login")
+def login(user:dict):
+    result = connect_user(user)
+    if result:
+        return {"message": "Login successful",
+                "status_code": 200}
+    else:
+        raise HTTPException(status_code=401, detail="This account is not exist")
 
 @app.get("/")
 def root():
