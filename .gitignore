@@ -3,6 +3,7 @@ credentials/
 models/*.pkl
 .env
 notebooks/mysql.ipynb
+notebooks/mdp.ipynb
 
 # OS generated files #
 ######################

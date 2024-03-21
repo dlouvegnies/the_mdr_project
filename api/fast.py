@@ -66,7 +66,7 @@ def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
     if categories is None:
         reco_by_last_liked = get_one_reco_by_last_liked(user_id)
     else:
-        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
+        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=ca)
     return reco_by_last_liked
 
 
