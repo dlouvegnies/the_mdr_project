@@ -16,6 +16,7 @@ MODE = os.environ.get('MODE')
 
 MODEL_NEWS_BATCH_SIZE = int(os.environ.get('MODEL_NEWS_BATCH_SIZE'))
 MODEL_MAX_FEATURES    = int(os.environ.get('MODEL_MAX_FEATURES'))
+CACHE_VALIDATION_DURATION = int(os.environ.get('CACHE_VALIDATION_DURATION'))
 
 ##################  CONSTANTS  #####################
 CREDENTIAL_PATH = os.path.join("credentials", CREDENTIAL_NAME)
@@ -28,3 +29,9 @@ REVIEW_TABLE_ID = f'{GCP_PROJECT}.{GCP_DB}.{REVIEW_TABLE}'
 
 SERVICE_URL = 'https://mdr-gzqmj6mx3q-ew.a.run.app/'
 LOCAL_URL = 'http://127.0.0.1:8000'
+
+##################  BDD  #####################
+DB_SERVER=os.environ.get('DB_SERVER')
+USER_DB=os.environ.get('USER_DB')
+PASSWORD_DB=os.environ.get('PASSWORD_DB')
+DB_NAME=os.environ.get('DB_NAME')

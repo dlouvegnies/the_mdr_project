@@ -19,3 +19,5 @@ numpy
 
 #Cloud
 google-cloud-bigquery[pandas]
+
+#mysql-connector-python
