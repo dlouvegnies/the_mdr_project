@@ -2,7 +2,11 @@ raw_data/
 credentials/
 models/*.pkl
 .env
-
+notebooks/mysql.ipynb
+notebooks/mdp.ipynb
+Raphael.jpeg
+Denis.jpeg
+Mathieu.jpeg
 
 # OS generated files #
 ######################
