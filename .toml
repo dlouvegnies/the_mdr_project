@@ -1,0 +1,20 @@
+# Google Cloud Project
+GCP_PROJECT="the-mdr-project"
+GCP_DB="live_mdr"
+CAT_TABLE="category_dataset"
+NEWS_TABLE="news_dataset"
+USER_TABLE="user_dataset"
+REVIEW_TABLE="review_dataset"
+
+# User
+USER_ID=2
+
+#Service
+MODE="SERVICE"
+SERVICE_URL="https://mdr-gzqmj6mx3q-ew.a.run.app"
+
+#Model
+MODEL_NEWS_BATCH_SIZE=200
+MODEL_MAX_FEATURES=100
+
+CREDENTIAL_NAME="the-mdr-project.json"
