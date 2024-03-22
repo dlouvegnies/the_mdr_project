@@ -97,6 +97,7 @@ def show_random_news(data):
 
 
 def show_recommended_news(news):
+        st.write(f"**News ID:** {news['news_id']}")
         st.subheader('News 📰')
         st.write(f"**Title:** {news['title']}")
         st.write("**Description:**")

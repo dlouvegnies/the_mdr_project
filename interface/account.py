@@ -40,7 +40,7 @@ def signup_page():
 
         if response.status_code == 200:
             st.success(f"Welcome {username}, you are sign up! 🫡")
-            
+
 
         else:
             st.error(f"Failed to signup from API. Status code: {response.status_code}")
