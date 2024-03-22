@@ -39,8 +39,9 @@ def signup_page():
         response = requests.post(api_url, json=data)
 
         if response.status_code == 200:
-            st.success(f"Welcome {username}, you are signup! 🫡")
-            pass
+            st.success(f"Welcome {username}, you are sign up! 🫡")
+
+
         else:
             st.error(f"Failed to signup from API. Status code: {response.status_code}")
             return None
