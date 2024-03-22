@@ -20,4 +20,7 @@ numpy
 #Cloud
 google-cloud-bigquery[pandas]
 
-#mysql-connector-python
+#BDD
+mysql-connector-python
+sqlalchemy
+cloud-sql-python-connector[pymysql]
