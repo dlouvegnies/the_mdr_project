@@ -7,7 +7,7 @@ from google.oauth2 import service_account
 from ml_logic.data_mysql import get_random_news, save_feedback
 from ml_logic.params import USER_ID, CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked
-from ml_logic.user import create_user, connect_user
+from ml_logic.user_mysql import create_user, connect_user
 
 
 def get_bigquery_client():
@@ -102,9 +102,11 @@ def signup(user:dict):
 @app.post("/login")
 def login(user:dict):
     result = connect_user(user)
-    if result:
+    if not result.empty:
+
         return {"message": "Login successful",
-                "status_code": 200}
+                "status_code": 200,
+                "result": result.to_dict()}
     else:
         raise HTTPException(status_code=401, detail="This account is not exist")
 

@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 import re
 import os
-from ml_logic.params import USER_ID, SERVICE_URL, MODE, LOCAL_URL
+from ml_logic.params import SERVICE_URL, MODE, LOCAL_URL
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
@@ -19,8 +19,9 @@ def login_page():
         response = requests.post(api_url, json=data)
 
         if response.status_code == 200:
-            st.write("GOOOD")
-            pass
+            data_received = response.json()
+            st.success(f"Welcome {data_received['result']['username']['0']}, you are logged! 🫡")
+            st.session_state['user_id'] = data_received['result']['user_id']['0']
         else:
             st.error(f"Failed to login from API. Status code: {response.status_code}")
             return None

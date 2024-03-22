@@ -3,7 +3,8 @@ import requests
 from datetime import datetime
 import re
 import os
-from ml_logic.params import USER_ID, SERVICE_URL, MODE, LOCAL_URL
+from ml_logic.params import SERVICE_URL, MODE, LOCAL_URL
+
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
@@ -109,10 +110,10 @@ def show_recommended_news(news):
             st.image("https://cdn.generationvoyage.fr/2020/04/journaux-britanniques-et-am%C3%A9ricains-768x421.jpg",width=400)
 
 
-def display_learning():
+def display_learning(user_id):
     st.title("THE MDR PROJECT")
 
-    data = fetch_news_to_learn(USER_ID)
+    data = fetch_news_to_learn(user_id)
     if data:
         show_random_news(data)
 
@@ -124,18 +125,18 @@ def display_learning():
 
         if thumb_up:
             st.success("You were interested in this news.")
-            test = save_learning_feedback(data, True, USER_ID)
+            test = save_learning_feedback(data, True, user_id)
             st.write(test)
 
         elif thumb_down:
             st.error("You weren't interested in this news.")
-            save_learning_feedback(data, False, USER_ID)
+            save_learning_feedback(data, False, user_id)
 
 
-def display_recommendation():
+def display_recommendation(user_id):
     st.title("THE MDR PROJECT")
 
-    data = fetch_news_to_evaluate(USER_ID)
+    data = fetch_news_to_evaluate(user_id)
     if data:
         news = next(iter(data.values()))
         show_recommended_news(news)
@@ -148,9 +149,9 @@ def display_recommendation():
 
         if thumb_up:
             st.success("You were interested in this news.")
-            test = save_recommendation_feedback(news, True, USER_ID)
+            test = save_recommendation_feedback(news, True, user_id)
             st.write(test)
 
         elif thumb_down:
             st.error("You weren't interested in this news.")
-            save_recommendation_feedback(news, False, USER_ID)
+            save_recommendation_feedback(news, False, user_id)
