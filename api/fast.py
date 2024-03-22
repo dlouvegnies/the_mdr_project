@@ -9,6 +9,8 @@ from ml_logic.params import USER_ID, CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked
 from ml_logic.user_mysql import create_user, connect_user
 
+from ml_logic.cache import Cache
+
 
 def get_bigquery_client():
     # Charger les informations d'identification depuis le fichier de clé JSON
@@ -64,10 +66,14 @@ def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
     Diplay a news (a prediction) that the user is supposed to like.
     """
     if categories is None:
-        reco_by_last_liked = get_one_reco_by_last_liked(user_id)
+        #reco_by_last_liked = get_one_reco_by_last_liked(user_id)
+        cache = Cache(user_id)
+        reco = cache.get_one_news_for_evaluation()
     else:
-        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
-    return reco_by_last_liked
+        #reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
+        cache = Cache(user_id)
+        reco = cache.get_one_news_for_evaluation(categories)
+    return reco #reco_by_last_liked
 
 
 

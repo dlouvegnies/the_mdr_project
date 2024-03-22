@@ -82,6 +82,7 @@ def clean_html_tags(text_html):
 def show_random_news(data):
     if data:
         st.subheader('News 📰')
+        st.write(f"**News ID:** {data['news_id']['0']}")
         st.write(f"**Title:** {data['title']['0']}")
         st.write("**Description:**")
         st.write(clean_html_tags(data['description']['0']))
@@ -98,6 +99,7 @@ def show_random_news(data):
 
 def show_recommended_news(news):
         st.subheader('News 📰')
+        st.write(f"**News ID:** {news['news_id']}")
         st.write(f"**Title:** {news['title']}")
         st.write("**Description:**")
         st.write(clean_html_tags(news['description']))

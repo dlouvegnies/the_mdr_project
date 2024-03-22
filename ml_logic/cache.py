@@ -4,10 +4,11 @@ from sqlalchemy import text
 import pymysql
 from ml_logic.params import DB_SERVER,USER_DB,PASSWORD_DB,DB_NAME,CATEGORIES_ID,CACHE_VALIDATION_DURATION
 import pandas as pd
-from model import Model
+from ml_logic.model import Model
 import os
 import numpy as np
 from datetime import datetime,timedelta
+from ml_logic.data_mysql import db_to_dataframe
 
 class Cache:
 
@@ -111,7 +112,7 @@ class Cache:
             news_df = pd.read_csv(data_filename)
             news_df.replace(np.nan, None, inplace=True)
         else:
-            news_df = self.db_to_dataframe_cache()
+            news_df = db_to_dataframe()
             news_df = news_df.drop_duplicates()
             news_df.replace(np.nan, None, inplace=True)
             news_df.to_csv(data_filename, index=False)
@@ -133,12 +134,15 @@ class Cache:
             liste_sans_doublons = list(set(list_reco))
             for i in liste_sans_doublons:
                 row_news=news_df.iloc[i]
-                insert_stmt = sqlalchemy.text(
-                    """INSERT INTO cached_news_dataset (cached_date,user_id,news_id,category_id,title,description,link,image,added_date,source,sub_cat)
-                    VALUES (:cached_date,:user_id,:news_id,:category_id,:title,:description,:link,:image,:added_date,:source,:sub_cat)""",
-                )
-                db_conn.execute(insert_stmt, parameters={"cached_date":cached_date,"user_id":self.user_id, "news_id": row_news['news_id'],"category_id": row_news['category_id'], "title": row_news['title'], "description": row_news['description'],"link":row_news['link'],"image":row_news['image'],"added_date":row_news['added_date'],"source":row_news['source'],"sub_cat":row_news['sub_cat']})
-            db_conn.commit()
+                #Check if the news is not already evaluated
+                if self.news_not_evaluated(row_news['news_id'])==0:
+                    insert_stmt = sqlalchemy.text(
+                        """INSERT INTO cached_news_dataset (cached_date,user_id,news_id,category_id,title,description,link,image,added_date,source,sub_cat)
+                        VALUES (:cached_date,:user_id,:news_id,:category_id,:title,:description,:link,:image,:added_date,:source,:sub_cat)""",
+                    )
+                    db_conn.execute(insert_stmt, parameters={"cached_date":cached_date,"user_id":self.user_id, "news_id": row_news['news_id'],"category_id": row_news['category_id'], "title": row_news['title'], "description": row_news['description'],"link":row_news['link'],"image":row_news['image'],"added_date":row_news['added_date'],"source":row_news['source'],"sub_cat":row_news['sub_cat']})
+                db_conn.commit()
+
 
     def execute_query(self,sql_query):
         # create connection pool
@@ -165,31 +169,16 @@ class Cache:
             result = pd.read_sql_query(sql_query, db_conn)
         return result
 
+    def news_not_evaluated(self,news_id):
+        sql_query = f"SELECT count(*) FROM review_dataset  WHERE user_id ={self.user_id} AND news_id={news_id} "
+        present = self.execute_query(text(sql_query)).fetchone()[0]
+        return present>0
+
         # function to return the database connection
     def getconn(self) -> pymysql.connections.Connection:
         conn: pymysql.connections.Connection = self.connector.connect(DB_SERVER,"pymysql",user=USER_DB,password=PASSWORD_DB,db=DB_NAME,charset='utf8mb4',collation='utf8mb4_unicode_ci')
         return conn
 
-
-
-    #Il faudra utiliser la fonction de Mathieu
-    def db_to_dataframe_cache(self,nb_rows=20000):
-        if nb_rows is not None:
-            params={'nb_rows': nb_rows}
-            limit_clause = "LIMIT %(nb_rows)s"
-        else:
-            limit_clause = ""
-
-        query = f"""SELECT *
-                    FROM news_dataset order by added_date DESC
-                    {limit_clause}
-                """
-
-        if nb_rows is not None:
-            result = self.execute_query_with_df_as_result(query,params)
-        else:
-            result = self.execute_query_with_df_as_result(query)
-        return result
 
 
 # Code de test de la méthode GO
