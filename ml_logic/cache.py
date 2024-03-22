@@ -4,7 +4,7 @@ from sqlalchemy import text
 import pymysql
 from ml_logic.params import DB_SERVER,USER_DB,PASSWORD_DB,DB_NAME,CATEGORIES_ID,CACHE_VALIDATION_DURATION
 import pandas as pd
-from model import Model
+from ml_logic.model import Model
 import os
 import numpy as np
 from datetime import datetime,timedelta
@@ -122,23 +122,44 @@ class Cache:
         # Formater l'instant présent dans le format requis
         cached_date = maintenant.strftime('%Y-%m-%d %H:%M:%S')
 
-        connector = Connector()
         pool = sqlalchemy.create_engine("mysql+pymysql://",creator=self.getconn)
 
+        df_existing_review=self.get_reviewed_news()
+
         list_reco=[]
+        nb_news_in_cache=0
         with pool.connect() as db_conn :
             for index, row in liked_news_df.iterrows():
                 tab_ind=model.get_news_prediction(row["title"],10)
                 list_reco.extend(tab_ind[0])
             liste_sans_doublons = list(set(list_reco))
+
             for i in liste_sans_doublons:
                 row_news=news_df.iloc[i]
-                insert_stmt = sqlalchemy.text(
-                    """INSERT INTO cached_news_dataset (cached_date,user_id,news_id,category_id,title,description,link,image,added_date,source,sub_cat)
-                    VALUES (:cached_date,:user_id,:news_id,:category_id,:title,:description,:link,:image,:added_date,:source,:sub_cat)""",
-                )
-                db_conn.execute(insert_stmt, parameters={"cached_date":cached_date,"user_id":self.user_id, "news_id": row_news['news_id'],"category_id": row_news['category_id'], "title": row_news['title'], "description": row_news['description'],"link":row_news['link'],"image":row_news['image'],"added_date":row_news['added_date'],"source":row_news['source'],"sub_cat":row_news['sub_cat']})
+                #Check if the news is not already evaluated
+                if nb_news_in_cache<50:
+                    if row_news['news_id'] not in df_existing_review['news_id'].values:
+                        insert_stmt = sqlalchemy.text(
+                            """INSERT INTO cached_news_dataset (cached_date,user_id,news_id,category_id,title,description,link,image,added_date,source,sub_cat)
+                            VALUES (:cached_date,:user_id,:news_id,:category_id,:title,:description,:link,:image,:added_date,:source,:sub_cat)""",
+                        )
+                        db_conn.execute(insert_stmt, parameters={"cached_date":cached_date,"user_id":self.user_id, "news_id": row_news['news_id'],"category_id": row_news['category_id'], "title": row_news['title'], "description": row_news['description'],"link":row_news['link'],"image":row_news['image'],"added_date":row_news['added_date'],"source":row_news['source'],"sub_cat":row_news['sub_cat']})
+                        nb_news_in_cache = nb_news_in_cache+1
             db_conn.commit()
+
+    #NOT USEFUL
+    def news_not_evaluated(self,news_id):
+        sql_query = f"SELECT count(*) FROM review_dataset  WHERE user_id ={self.user_id} AND news_id={news_id} "
+        present = self.execute_query(text(sql_query)).fetchone()[0]
+        print(f"news_not_evaluated --{news_id}")
+        return present>0
+
+
+    def get_reviewed_news(self):
+        sql_query = f"SELECT * FROM review_dataset  WHERE user_id ={self.user_id}"
+        df_existing_review=self.execute_query_with_df_as_result_no_params(sql_query)
+        return df_existing_review
+
 
     def execute_query(self,sql_query):
         # create connection pool
@@ -198,7 +219,7 @@ if __name__ == "__main__":
     cache_test = Cache(2)
 
     # Appel de la méthode GO pour tester
-    #cache_test.clear_all_caches()
+    cache_test.clear_all_caches()
 
     #
    # cache_test.create_one_user_cache(CATEGORIES_ID)
@@ -207,4 +228,4 @@ if __name__ == "__main__":
     #cache_test.remove_one_news_from_cache(129402)
 
     #cache_test.check_valid_cache(20,CATEGORIES_ID)
-    cache_test.get_one_news_for_evaluation(2)
+    #cache_test.get_one_news_for_evaluation()

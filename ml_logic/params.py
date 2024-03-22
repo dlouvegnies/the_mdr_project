@@ -10,7 +10,7 @@ USER_TABLE = os.environ.get('USER_TABLE')
 REVIEW_TABLE = os.environ.get('REVIEW_TABLE')
 
 CREDENTIAL_NAME = os.environ.get('CREDENTIAL_NAME')
-USER_ID = int(os.environ.get('USER_ID'))
+#USER_ID = int(os.environ.get('USER_ID'))
 
 MODE = os.environ.get('MODE')
 

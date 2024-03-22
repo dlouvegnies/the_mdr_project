@@ -5,10 +5,10 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 
 from ml_logic.data_mysql import get_random_news, save_feedback
-from ml_logic.params import USER_ID, CATEGORIES_ID, CREDENTIAL_PATH
+from ml_logic.params import  CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked
 from ml_logic.user_mysql import create_user, connect_user
-
+from ml_logic.cache import Cache
 
 def get_bigquery_client():
     # Charger les informations d'identification depuis le fichier de clé JSON
@@ -38,7 +38,7 @@ def get_one_news_to_learn(user_id:int):
     """
     Diplay a news to know if the user like it or not, in order to learn his tastes
     """
-    news = get_random_news(user_id=USER_ID, nb_news=1).to_dict()
+    news = get_random_news(user_id=user_id, nb_news=1).to_dict()
     return news
 
 
@@ -67,7 +67,10 @@ def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
         reco_by_last_liked = get_one_reco_by_last_liked(user_id)
     else:
         reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
-    return reco_by_last_liked
+
+    cache = Cache(user_id)
+    return cache.get_one_news_for_evaluation()
+    #return reco_by_last_liked
 
 
 
