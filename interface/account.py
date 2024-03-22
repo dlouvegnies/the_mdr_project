@@ -36,10 +36,10 @@ def signup_page():
         api_url = os.path.join(base_url, 'signup')
         data = {'username': username,
                   'password': password}
-        response = requests.post(api_url, params=data)
+        response = requests.post(api_url, json=data)
 
         if response.status_code == 200:
-            # AFFICHER LA PAGE TU ES INSCRIT C'est bon
+            st.success(f"Welcome {username}, you are signup! 🫡")
             pass
         else:
             st.error(f"Failed to signup from API. Status code: {response.status_code}")
