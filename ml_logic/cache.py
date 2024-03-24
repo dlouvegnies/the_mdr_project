@@ -25,6 +25,7 @@ class Cache:
 
         sql_query = f"SELECT * FROM cached_news_dataset WHERE user_id ={self.user_id}"
         df=self.execute_query_with_df_as_result_no_params(sql_query)
+        print(df)
 
         #Check if we have a news for that category_id
         df_cat = df.loc[df["category_id"]==caterory_id]
@@ -102,6 +103,7 @@ class Cache:
             """
         params={'category_ids': categories, 'user_id': self.user_id}
         liked_news_df = self.execute_query_with_df_as_result(sql_query,params)
+        liked_news_df.drop(columns=['embedding'], inplace=True) # Drop embedding
 
         #STEP 2 : For each news, get recommendation
         # Retrieve BQ data in Dataframe and cleaning it
@@ -112,6 +114,7 @@ class Cache:
             news_df.replace(np.nan, None, inplace=True)
         else:
             news_df = self.db_to_dataframe_cache()
+            news_df.drop(columns=['embedding'], inplace=True) # Drop embedding
             news_df = news_df.drop_duplicates()
             news_df.replace(np.nan, None, inplace=True)
             news_df.to_csv(data_filename, index=False)

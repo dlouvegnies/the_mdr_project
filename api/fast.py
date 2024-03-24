@@ -38,8 +38,9 @@ def get_one_news_to_learn(user_id:int):
     """
     Diplay a news to know if the user like it or not, in order to learn his tastes
     """
-    news = get_random_news(user_id=user_id, nb_news=1).to_dict()
-    return news
+    news = get_random_news(user_id=user_id, nb_news=1)
+    news.drop(columns=['embedding'], inplace=True) # May be, make precise request to evitate retrieving data for nothing
+    return news.to_dict()
 
 
 
@@ -63,10 +64,10 @@ def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
     """
     Diplay a news (a prediction) that the user is supposed to like.
     """
-    if categories is None:
-        reco_by_last_liked = get_one_reco_by_last_liked(user_id)
-    else:
-        reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
+    # if categories is None:
+    #     reco_by_last_liked = get_one_reco_by_last_liked(user_id)
+    # else:
+    #     reco_by_last_liked = get_one_reco_by_last_liked(user_id, categories=categories)
 
     cache = Cache(user_id)
     return cache.get_one_news_for_evaluation()
