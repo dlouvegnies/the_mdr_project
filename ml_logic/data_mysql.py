@@ -40,7 +40,7 @@ def get_random_news(user_id:int, categories:list=CATEGORIES_ID, nb_news:int=20):
         SELECT *,
                ROW_NUMBER() OVER(ORDER BY RAND()) AS rand_num
         FROM news_dataset
-        WHERE category_id IN %(category_ids)s
+        WHERE category_id IN %(category_ids)s AND image !=''
             AND news_id NOT IN (
                 SELECT news_id
                 FROM review_dataset

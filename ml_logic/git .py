@@ -20,7 +20,7 @@ CACHE_VALIDATION_DURATION = int(os.environ.get('CACHE_VALIDATION_DURATION'))
 
 ##################  CONSTANTS  #####################
 CREDENTIAL_PATH = os.path.join("credentials", CREDENTIAL_NAME)
-CATEGORIES_ID = [1, 3, 5]
+CATEGORIES_ID = [11, 6]
 
 CAT_TABLE_ID=f'{GCP_PROJECT}.{GCP_DB}.{CAT_TABLE}'
 NEWS_TABLE_ID=f'{GCP_PROJECT}.{GCP_DB}.{NEWS_TABLE}'
