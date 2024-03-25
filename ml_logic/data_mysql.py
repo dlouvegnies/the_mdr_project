@@ -3,6 +3,7 @@ import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 import pymysql
 import pandas as pd
+from datetime import datetime
 
 from ml_logic.params import DB_SERVER, USER_DB, PASSWORD_DB, DB_NAME, CATEGORIES_ID
 
@@ -105,7 +106,7 @@ def get_last_news_liked(user_id:int, categories:list):
     """
 
     result = pd.read_sql_query(query, conn, params=params)
-    result.drop(columns=['embedding'], inplace=True) # Drop embedding
+    #result.drop(columns=['embedding'], inplace=True) # Drop embedding
 
     print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
     print(result)
@@ -113,7 +114,7 @@ def get_last_news_liked(user_id:int, categories:list):
     return result
 
 
-def db_to_dataframe(nb_rows=None):
+def db_to_dataframe(date=None, nb_rows=None):
     """
     Retrieve data from big query with <nb_rows> and return it in DataFrame
     """
@@ -124,20 +125,35 @@ def db_to_dataframe(nb_rows=None):
     )
     conn = pool.connect()
 
+    params = {}
+    if date is not None:
+        params['date']= date.strftime("%Y-%m-%d")
+        where_clause = "WHERE added_date >= %(date)s"
+    else:
+        where_clause = ""
+
     if nb_rows is not None:
-        params={'nb_rows': nb_rows}
+        params['nb_rows'] = nb_rows
         limit_clause = "LIMIT %(nb_rows)s"
     else:
         limit_clause = ""
 
 
     query = f"""SELECT *
-                FROM news_dataset order by added_date DESC
+                FROM news_dataset
+                {where_clause}
+                ORDER BY added_date DESC
                 {limit_clause}
             """
-    if nb_rows is not None:
+    if nb_rows is not None or date is not None:
         result = pd.read_sql_query(query, conn, params=params)
     else:
         result = pd.read_sql_query(query, conn)
     print("DataFrame retrieve from MySQL")
     return result
+
+
+if __name__ == '__main__':
+    date_to_retrieve_from = datetime(2024, 3, 18)
+    news = db_to_dataframe(date=date_to_retrieve_from)
+    print(news)

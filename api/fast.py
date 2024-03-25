@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 
 from ml_logic.data_mysql import get_random_news, save_feedback
 from ml_logic.params import  CATEGORIES_ID, CREDENTIAL_PATH
-from ml_logic.recommendation import get_one_reco_by_last_liked
+from ml_logic.recommendation import get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
 from ml_logic.cache import Cache
 
@@ -72,6 +72,22 @@ def get_one_news_to_evaluate(user_id:int, categories:list[int]=Query(None)):
     cache = Cache(user_id)
     return cache.get_one_news_for_evaluation()
     #return reco_by_last_liked
+
+
+@app.get("/get_one_reco_by_bert")
+def get_one_reco_by_bert(user_id:int, method, categories:list[int]=Query(None)):
+    #bq_client: bigquery.Client = Depends(get_bigquery_client)
+    """
+    Diplay a news (a prediction) that the user is supposed to like with bert model.
+    """
+    if categories is None:
+        bert_reco = get_one_reco_by_last_liked_with_bert(user_id=user_id,
+                                                         method=method)
+    else:
+        bert_reco = get_one_reco_by_last_liked_with_bert(user_id=user_id,
+                                                         method=method,
+                                                         categories=categories)
+    return bert_reco
 
 
 

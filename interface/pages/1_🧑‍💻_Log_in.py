@@ -1,4 +1,3 @@
-from interface.account import login_page
-import streamlit as st
+from account import login_page
 
 login_page()
