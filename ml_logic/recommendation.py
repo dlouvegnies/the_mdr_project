@@ -55,7 +55,7 @@ def get_one_reco_by_last_liked_with_bert(news_df, user_id:int, categories=CATEGO
 
     last_news_liked = get_last_news_liked(user_id, categories) #if last_news_liked.empty SERVER ERROR
     embedding = last_news_liked['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float32).tolist()).values[0]
-    recommended_news = get_top_similar_news(embedding, news_df, 1, method=method)
+    recommended_news = get_top_similar_news(np.array(embedding), news_df, 1, method=method)
     recommended_news.drop(columns=['embedding'], inplace=True)
     return recommended_news.to_dict()
 

@@ -129,7 +129,7 @@ def db_to_dataframe(date=None, nb_rows=None):
     params = {}
     if date is not None:
         params['date']= date.strftime("%Y-%m-%d")
-        where_clause = "WHERE added_date <= %(date)s" # Remettre le >
+        where_clause = "WHERE added_date > %(date)s" # Remettre le >=
     else:
         where_clause = ""
 
