@@ -1,5 +1,5 @@
 import streamlit as st
-from interface.news_page import display_learning
+from news_page import display_learning
 
 if 'user_id' not in st.session_state:
     st.info("You are not logged in. Please log in or sign up to access this feature.")

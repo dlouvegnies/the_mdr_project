@@ -1,5 +1,5 @@
 import streamlit as st
-from interface.news_page import display_recommendation
+from news_page import display_recommendation
 
 
 if 'user_id' not in st.session_state:
@@ -10,7 +10,7 @@ if 'user_id' not in st.session_state:
     if st.button("Sign Up"):
         st.write('<meta http-equiv="refresh" content="0;URL=http://localhost:8501/Sign_up">', unsafe_allow_html=True)
 
-    st.stop()  
+    st.stop()
 else:
     st.write(st.session_state["user_id"])
     display_recommendation(st.session_state.user_id)
