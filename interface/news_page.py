@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 import re
 import os
-from ml_logic.params import SERVICE_URL, MODE, LOCAL_URL
+from params import SERVICE_URL, MODE, LOCAL_URL
 
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL

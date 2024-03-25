@@ -1,14 +1,4 @@
 import streamlit as st
-import requests
-from datetime import datetime
-import re
-import os
-from ml_logic.params import SERVICE_URL, MODE, LOCAL_URL
-
-from interface.news_page import display_learning, display_recommendation
-from interface.account import login_page, signup_page
-
-base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
 def main():
     st.sidebar.markdown(f"""
