@@ -24,3 +24,6 @@ google-cloud-bigquery[pandas]
 mysql-connector-python
 sqlalchemy
 cloud-sql-python-connector[pymysql]
+
+#DL
+sentence-transformers

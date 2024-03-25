@@ -105,6 +105,7 @@ def get_last_news_liked(user_id:int, categories:list):
     """
 
     result = pd.read_sql_query(query, conn, params=params)
+    result.drop(columns=['embedding'], inplace=True) # Drop embedding
 
     print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
     print(result)
@@ -131,7 +132,7 @@ def db_to_dataframe(nb_rows=None):
 
 
     query = f"""SELECT *
-                FROM news_dataset
+                FROM news_dataset order by added_date DESC
                 {limit_clause}
             """
     if nb_rows is not None:
