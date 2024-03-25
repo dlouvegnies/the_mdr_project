@@ -3,10 +3,14 @@ import requests
 from datetime import datetime
 import re
 import os
-from ml_logic.params import SERVICE_URL, MODE, LOCAL_URL
+#from ml_logic.params import SERVICE_URL, MODE, LOCAL_URL
 
 from interface.news_page import display_learning, display_recommendation
 from interface.account import login_page, signup_page
+
+MODE="SERVICE"
+SERVICE_URL="https://mdr-gzqmj6mx3q-ew.a.run.app"
+LOCAL_URL = ""
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
