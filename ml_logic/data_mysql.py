@@ -129,7 +129,7 @@ def db_to_dataframe(date=None, nb_rows=None):
     params = {}
     if date is not None:
         params['date']= date.strftime("%Y-%m-%d")
-        where_clause = "WHERE added_date >= %(date)s"
+        where_clause = "WHERE added_date <= %(date)s" # Remettre le >
     else:
         where_clause = ""
 
@@ -151,10 +151,10 @@ def db_to_dataframe(date=None, nb_rows=None):
     else:
         result = pd.read_sql_query(query, conn)
     print("DataFrame retrieve from MySQL")
+    print(result)
     result['embedding'] = result['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float32).tolist())
     print("Embedding decoded")
     return result
-
 
 if __name__ == '__main__':
     date_to_retrieve_from = datetime(2024, 3, 18)
