@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 import os
+import ast
+
 
 from ml_logic.data_mysql import db_to_dataframe, get_last_news_liked
 from ml_logic.params import MODEL_NEWS_BATCH_SIZE, CATEGORIES_ID
@@ -44,21 +46,35 @@ def get_one_reco_by_last_liked_with_bert(user_id:int, categories=CATEGORIES_ID, 
     data_filename = os.path.join("raw_data", f"data_for_bert_{date.strftime('%Y-%m-%d')}.csv")
 
     if os.path.exists(data_filename):
-        news_df = pd.read_csv(data_filename)
+        print('Begin read csv')
+        news_df = pd.read_csv(data_filename, converters={"embedding": convert_embedding})
+        print('End read csv')
+        print('End replace nan')
         news_df.replace(np.nan, None, inplace=True)
+        print('End replace nan')
     else:
         news_df = db_to_dataframe(date=date)
-        news_df = news_df.drop_duplicates()
         news_df.replace(np.nan, None, inplace=True)
         news_df.to_csv(data_filename, index=False)
 
-
+    print('begin get last news')
     last_news_liked = get_last_news_liked(user_id, categories) #if last_news_liked.empty SERVER ERROR
-    embedding_array = np.frombuffer(np.array(last_news_liked['embedding']), dtype=np.float32)
-    recommended_news = get_top_similar_news(embedding_array, news_df, 1, method=method)
+    print('end get last news')
+    print('begin convert embedding last news')
+    embedding = last_news_liked['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float32).tolist()).values[0]
+    print('end convert embedding last news')
+    print("---------------------------")
+    print(embedding)
+    print("---------------------------")
+    print('begin get top similar')
+    recommended_news = get_top_similar_news(embedding, news_df, 1, method=method)
     recommended_news.drop(columns=['embedding'], inplace=True)
+    print('end get top similar')
     return recommended_news.to_dict()
 
+def convert_embedding(embedding_str):
+    embedding_list = ast.literal_eval(embedding_str)
+    return embedding_list
 
 def get_top_similar_news(news_embedded, news_df, num_recommendations, method='cosine'):
     # Map method to associated function
