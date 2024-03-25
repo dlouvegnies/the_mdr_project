@@ -2,6 +2,8 @@ raw_data/
 credentials/
 models/*.pkl
 .env
+.env.yaml
+.toml
 notebooks/mysql.ipynb
 notebooks/mdp.ipynb
 Raphael.jpeg
