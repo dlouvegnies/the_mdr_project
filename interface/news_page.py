@@ -4,6 +4,8 @@ from datetime import datetime
 import re
 import os
 from params import SERVICE_URL, MODE, LOCAL_URL
+import pandas as pd
+from webbrowser import open_new_tab
 
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
@@ -97,13 +99,14 @@ def show_random_news(data):
         st.write(f"**Title:** {data['title']['0']}")
         st.write("**Description:**")
         st.write(clean_html_tags(data['description']['0']))
-        st.write("**Link:**")
-        st.write(data['link']['0'])
-        st.write("**Image:**")
+
         if data['image']['0']:
             st.image(data['image']['0'], width=300)
         else:
             st.image("https://cdn.generationvoyage.fr/2020/04/journaux-britanniques-et-am%C3%A9ricains-768x421.jpg",width=400)
+
+
+        st.link_button('Click here to see the news', data['link']['0'])
     else:
         st.error("No data available")
 
@@ -132,7 +135,7 @@ def display_learning(user_id):
 
         col1, col2 = st.columns(2)
         with col1:
-            thumb_up = st.button("👍 I'm interested")
+            thumb_up = st.button("👍 I'm interested", )
         with col2:
             thumb_down = st.button("👎 I'm not interested")
 
@@ -182,3 +185,30 @@ def reset_user_profile(user_id):
     else:
         st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
         return None
+
+def search_page():
+    st.title("Find a news from keywords")
+    # Formulaire d'inscription
+    keywords = st.text_area('Define your keywords')
+    if st.button("Search"):
+        api_url = os.path.join(base_url, 'search')
+        data = {'keywords': keywords}
+        response = requests.post(api_url, json=data)
+
+        if response.status_code == 200:
+            data_received = response.json()
+            reco_df = pd.DataFrame(data_received['result'])
+            st.dataframe(reco_df,
+                         column_config={
+                        "title": "News title",
+                        "description": "Description",
+                        "url": st.column_config.LinkColumn("App URL"),
+                        "link": st.column_config.LinkColumn(
+                        "Link", display_text="Open news"
+                        ),
+                        "source": "Source"
+                        },
+                         hide_index=True)
+        else:
+            st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
+            return None

@@ -64,6 +64,8 @@ def get_random_news(user_id:int, categories:list=[], nb_news:int=20):
 
     result = pd.read_sql_query(query, conn, params=params)
 
+    conn.close()
+
     return result
 
 
@@ -120,6 +122,9 @@ def get_last_news_liked(user_id:int, categories:list):
     print('------------LAST NEWS LIKED BY {user_id} retrieve -------------')
     print(result)
     print('-------------------------')
+
+    conn.close()
+
     return result
 
 
@@ -163,7 +168,11 @@ def db_to_dataframe(date=None, nb_rows=None):
     result['embedding'] = result['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float64).tolist())
     print("Embedding decoded")
     print('LONGUEUR:', len(result.iloc[0]['embedding']))
+
+    conn.close()
+
     return result
+
 
 def reset_review_dataset(user_id:int):
     pool = sqlalchemy.create_engine(
@@ -180,6 +189,7 @@ def reset_review_dataset(user_id:int):
             """)
     conn.execute(query, parameters=params)
     conn.commit()
+    conn.close()
 
 
 def execute_query_with_df_as_result(sql_query,params={}):
