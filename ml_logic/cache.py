@@ -263,7 +263,9 @@ class Cache:
             merged_recommendations.drop_duplicates(subset=['news_id'], inplace=True)
             mask = merged_recommendations['news_id'].isin(df_existing_review['news_id'])
             filtered_merged_recommendations = merged_recommendations[~mask]
-            # ENVOYER LE BON DATAFRAME
+            filtered_merged_recommendations.insert(0, 'cached_date', cached_date)
+            filtered_merged_recommendations.insert(1, 'user_id', self.user_id)
+            filtered_merged_recommendations.drop(columns=['embedding'], inplace=True)
             filtered_merged_recommendations.to_sql(name='cached_news_dataset', con=db_conn, if_exists='append', index=False)
 
 
