@@ -1,9 +1,6 @@
 import streamlit as st
 
 def main():
-    st.sidebar.markdown(f"""
-    # The MDR Project
-    """)
 
     st.title("THE MDR PROJECT 🤣")
 

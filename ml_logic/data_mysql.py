@@ -3,6 +3,7 @@ import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 import pymysql
 import pandas as pd
+import numpy as np
 from datetime import datetime
 
 from ml_logic.params import DB_SERVER, USER_DB, PASSWORD_DB, DB_NAME, CATEGORIES_ID
@@ -128,7 +129,7 @@ def db_to_dataframe(date=None, nb_rows=None):
     params = {}
     if date is not None:
         params['date']= date.strftime("%Y-%m-%d")
-        where_clause = "WHERE added_date >= %(date)s"
+        where_clause = "WHERE added_date > %(date)s" # Remettre le >=
     else:
         where_clause = ""
 
@@ -150,6 +151,9 @@ def db_to_dataframe(date=None, nb_rows=None):
     else:
         result = pd.read_sql_query(query, conn)
     print("DataFrame retrieve from MySQL")
+    print(result)
+    result['embedding'] = result['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float32).tolist())
+    print("Embedding decoded")
     return result
 
 def execute_query_with_df_as_result(sql_query,params={}):
@@ -173,5 +177,5 @@ def execute_query_with_df_as_result_no_params(sql_query):
 
 if __name__ == '__main__':
     date_to_retrieve_from = datetime(2024, 3, 18)
-    news = db_to_dataframe(date=date_to_retrieve_from)
+    news = db_to_dataframe(date=date_to_retrieve_from, nb_rows=1000)
     print(news)

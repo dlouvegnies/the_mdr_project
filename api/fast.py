@@ -1,15 +1,19 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.data_mysql import get_random_news, save_feedback
+from ml_logic.data_mysql import get_random_news, save_feedback, db_to_dataframe
 from ml_logic.params import  CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
 from ml_logic.cache import Cache
+
+from datetime import datetime
+
 from ml_logic.category import Category
+
 
 def get_bigquery_client():
     # Charger les informations d'identification depuis le fichier de clé JSON
@@ -18,7 +22,7 @@ def get_bigquery_client():
     return bigquery.Client(credentials=credentials, project=credentials.project_id)
 
 app = FastAPI()
-
+news_df = db_to_dataframe(date=datetime(2024, 3, 18), nb_rows=1000)
 
 """
 To launch the server :
@@ -81,11 +85,13 @@ def get_one_reco_by_bert(user_id:int, method, categories:list[int]=Query(None)):
     """
     Diplay a news (a prediction) that the user is supposed to like with bert model.
     """
-    if categories is None:
-        bert_reco = get_one_reco_by_last_liked_with_bert(user_id=user_id,
+    if categories is None: #Request.app.state.news_of_the_day,
+        bert_reco = get_one_reco_by_last_liked_with_bert(news_df,
+                                                         user_id=user_id,
                                                          method=method)
     else:
-        bert_reco = get_one_reco_by_last_liked_with_bert(user_id=user_id,
+        bert_reco = get_one_reco_by_last_liked_with_bert(news_df,
+                                                         user_id=user_id,
                                                          method=method,
                                                          categories=categories)
     return bert_reco

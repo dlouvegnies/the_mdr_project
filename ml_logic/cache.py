@@ -9,6 +9,9 @@ import os
 import numpy as np
 from datetime import datetime,timedelta
 
+from ml_logic.recommendation import get_top_similar_news
+from ml_logic.data_mysql import db_to_dataframe
+
 class Cache:
 
     def __init__(self,user_id):
@@ -215,14 +218,64 @@ class Cache:
             result = self.execute_query_with_df_as_result(query)
         return result
 
+####################### BERT #######################
+
+    """
+    Create the user's cache
+    """
+    def create_bert_cache(self, news_df, categories:list):
+        #STEP 1 : get All the news and recommendation his liked
+        sql_query = """
+            SELECT n.*
+            FROM review_dataset r
+            JOIN news_dataset n
+            ON r.news_id = n.news_id
+            WHERE r.user_id = %(user_id)s
+            AND category_id IN %(category_ids)s
+            AND (r.like_the_news = TRUE OR r.good_recommendation = TRUE)
+            ORDER BY r.updated_date DESC, n.added_date DESC
+            """
+        params={'category_ids': categories, 'user_id': self.user_id}
+        liked_news_df = self.execute_query_with_df_as_result(sql_query,params)
+
+        #STEP 2 : For each news, get recommendation
+
+        # Obtenir l'instant présent
+        maintenant = datetime.now()
+        # Formater l'instant présent dans le format requis
+        cached_date = maintenant.strftime('%Y-%m-%d %H:%M:%S')
+
+        pool = sqlalchemy.create_engine("mysql+pymysql://",creator=self.getconn)
+
+        df_existing_review=self.get_reviewed_news()
+        print(liked_news_df)
+        list_reco=[]
+        with pool.connect() as db_conn :
+            for index, row in liked_news_df.head(5).iterrows():
+                embedding_array = np.frombuffer(row['embedding'], dtype=np.float32)
+                recommendation_df = get_top_similar_news(embedding_array, news_df, num_recommendations=10)
+                list_reco.append(recommendation_df)
+            merged_recommendations = pd.concat(list_reco, ignore_index=True)
+            merged_recommendations.drop_duplicates(subset=['news_id'], inplace=True)
+            mask = merged_recommendations['news_id'].isin(df_existing_review['news_id'])
+            filtered_merged_recommendations = merged_recommendations[~mask]
+            # ENVOYER LE BON DATAFRAME
+            filtered_merged_recommendations.to_sql(name='cached_news_dataset', con=db_conn, if_exists='append', index=False)
+
+
+
+
 
 # Code de test de la méthode GO
 if __name__ == "__main__":
     # Création d'une instance de la classe TOTO
-    cache_test = Cache(2)
+    cache_test = Cache(3)
+    cache_test.clear_all_caches()
+    news_df = db_to_dataframe(nb_rows=1000)
+    cache_test.create_bert_cache(news_df, categories=CATEGORIES_ID)
 
     # Appel de la méthode GO pour tester
-    cache_test.clear_all_caches()
+    # cache_test.clear_all_caches()
 
     #
    # cache_test.create_one_user_cache(CATEGORIES_ID)
