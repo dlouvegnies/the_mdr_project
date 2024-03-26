@@ -170,3 +170,15 @@ def display_recommendation(user_id):
         elif thumb_down:
             st.error("You weren't interested in this news.")
             save_recommendation_feedback(news, False, user_id)
+
+def reset_user_profile(user_id):
+    api_url = os.path.join(base_url, 'reset')
+    params = {'user_id': user_id}
+
+    response = requests.get(api_url, params=params)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
+        return None

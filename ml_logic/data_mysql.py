@@ -43,6 +43,7 @@ def get_random_news(user_id:int, categories:list=CATEGORIES_ID, nb_news:int=20):
                ROW_NUMBER() OVER(ORDER BY RAND()) AS rand_num
         FROM news_dataset
         WHERE category_id IN %(category_ids)s
+            AND image != ''
             AND news_id NOT IN (
                 SELECT news_id
                 FROM review_dataset
@@ -156,6 +157,23 @@ def db_to_dataframe(date=None, nb_rows=None):
     print("Embedding decoded")
     print('LONGUEUR:', len(result.iloc[0]['embedding']))
     return result
+
+def reset_review_dataset(user_id:int):
+    pool = sqlalchemy.create_engine(
+        "mysql+pymysql://",
+        creator=getconn,
+    )
+    conn = pool.connect()
+
+    params={'user_id': user_id}
+
+    query = sqlalchemy.text("""
+            DELETE FROM review_dataset
+            WHERE user_id = :user_id
+            """)
+    conn.execute(query, parameters=params)
+    conn.commit()
+
 
 def execute_query_with_df_as_result(sql_query,params={}):
     # create connection pool

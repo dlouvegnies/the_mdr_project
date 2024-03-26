@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from ml_logic.data_mysql import get_random_news, save_feedback, db_to_dataframe
+from ml_logic.data_mysql import get_random_news, save_feedback, db_to_dataframe, reset_review_dataset
 from ml_logic.params import  CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
@@ -185,6 +185,14 @@ def save_user_categories(user_id=int,category_list=list):
         raise HTTPException(status_code=500, detail="Failed to save User categories")
 
 
+@app.get("/reset")
+def reset_user_profile(user_id:int):
+    """
+    Reset profile information
+    """
+    reset_review_dataset(user_id)
+    return {"message": "User profile deleted successfully",
+                    "status_code": 200}
 
 
 @app.get("/")
