@@ -1,6 +1,7 @@
 import os
 import numpy as np
 
+
 ##################  VARIABLES  ##################
 GCP_PROJECT = os.environ.get('GCP_PROJECT')
 GCP_DB = os.environ.get('GCP_DB')
@@ -18,7 +19,7 @@ CACHE_VALIDATION_DURATION = int(os.environ.get('CACHE_VALIDATION_DURATION'))
 
 ##################  CONSTANTS  #####################
 CREDENTIAL_PATH = os.path.join("credentials", CREDENTIAL_NAME)
-CATEGORIES_ID = [6, 8]
+
 
 CAT_TABLE_ID=f'{GCP_PROJECT}.{GCP_DB}.{CAT_TABLE}'
 NEWS_TABLE_ID=f'{GCP_PROJECT}.{GCP_DB}.{NEWS_TABLE}'

@@ -6,8 +6,9 @@ import ast
 
 
 from ml_logic.data_mysql import db_to_dataframe, get_last_news_liked
-from ml_logic.params import MODEL_NEWS_BATCH_SIZE, CATEGORIES_ID
+from ml_logic.params import MODEL_NEWS_BATCH_SIZE
 from ml_logic.model import Model
+from ml_logic.category import Category
 
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -15,7 +16,7 @@ from datetime import datetime
 
 ################# TFIDF #################
 
-def get_one_reco_by_last_liked(user_id:int, categories=CATEGORIES_ID):
+def get_one_reco_by_last_liked(user_id:int, categories=[]):
     # Retrieve BQ data in Dataframe and cleaning it
     data_filename = os.path.join("raw_data", "data_for_model.csv")
 
@@ -30,6 +31,10 @@ def get_one_reco_by_last_liked(user_id:int, categories=CATEGORIES_ID):
 
     model = Model(news_df)
 
+    if categories==[]:
+        cat_obj = Category(user_id=user_id)
+        categories=cat_obj.get_user_categories_ids()
+
     last_news_liked = get_last_news_liked(user_id, categories) #if last_news_liked.empty SERVER ERROR
     neigh_ind = model.get_news_prediction(last_news_liked.title[0], 10)
     random_news_in_neigh_news = np.random.randint(1,10)
@@ -41,7 +46,7 @@ def get_one_reco_by_last_liked(user_id:int, categories=CATEGORIES_ID):
 
 
 ################# BERT #################
-def get_one_reco_by_last_liked_with_bert(news_df, user_id:int, categories=CATEGORIES_ID, method='cosine', date=datetime(2024, 3, 18)):
+def get_one_reco_by_last_liked_with_bert(news_df, user_id:int, categories=[], method='cosine', date=datetime(2024, 3, 18)):
 
     data_filename = os.path.join("raw_data", f"data_for_bert_{date.strftime('%Y-%m-%d')}.csv")
 
@@ -52,6 +57,10 @@ def get_one_reco_by_last_liked_with_bert(news_df, user_id:int, categories=CATEGO
     #     news_df = db_to_dataframe(date=date, nb_rows=1000)
     #     news_df.replace(np.nan, None, inplace=True)
     #     news_df.to_csv(data_filename, index=False)
+
+    if categories==[]:
+        cat_obj = Category(user_id)
+        categories=cat_obj.get_user_categories_ids()
 
     last_news_liked = get_last_news_liked(user_id, categories) #if last_news_liked.empty SERVER ERROR
     embedding = last_news_liked['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float32).tolist()).values[0]

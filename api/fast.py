@@ -5,7 +5,7 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 
 from ml_logic.data_mysql import get_random_news, save_feedback, db_to_dataframe
-from ml_logic.params import  CATEGORIES_ID, CREDENTIAL_PATH
+from ml_logic.params import CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
 from ml_logic.cache import Cache
@@ -13,6 +13,7 @@ from ml_logic.cache import Cache
 from datetime import datetime
 
 from ml_logic.category import Category
+
 
 
 def get_bigquery_client():
@@ -163,7 +164,8 @@ def get_one_user_category(user_id:int):
 
     """
     cat_obj = Category(user_id)
-    return cat_obj.get_user_categories()
+    #return cat_obj.get_user_categories()
+    return cat_obj.get_user_categories_and_list()
 
 
 @app.post("/save_user_categories")
@@ -175,6 +177,25 @@ def save_user_categories(user_id=int,category_list=list):
     print(f"--------Category LIST= {category_list}")
     cat_obj = Category(user_id)
     result=cat_obj.save_user_categories(category_list)
+    if result:
+        return {"message": "User categories saved successfully",
+                    "status_code": 200}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to save User categories")
+
+
+
+@app.post("/save_user_category")
+def save_user_category(user_id=int,category_id=int,on=int):
+    """
+
+    """
+    if int(on)==1:
+        on=True
+    else:
+        on=False
+    cat_obj = Category(user_id)
+    result=cat_obj.save_user_category(category_id,on)
     if result:
         return {"message": "User categories saved successfully",
                     "status_code": 200}

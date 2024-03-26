@@ -5,8 +5,9 @@ import pymysql
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from ml_logic.category import Category
 
-from ml_logic.params import DB_SERVER, USER_DB, PASSWORD_DB, DB_NAME, CATEGORIES_ID
+from ml_logic.params import DB_SERVER, USER_DB, PASSWORD_DB, DB_NAME
 
 def getconn() -> pymysql.connections.Connection:
     """
@@ -23,11 +24,17 @@ def getconn() -> pymysql.connections.Connection:
     return conn
 
 
-def get_random_news(user_id:int, categories:list=CATEGORIES_ID, nb_news:int=20):
+def get_random_news(user_id:int, categories:list=[], nb_news:int=20):
     """
     Retrieve <nb_news> random news not viewed by <user_id> and
     in the <categories> list and return a DataFrame
     """
+
+    if categories==[]:
+        cat_obj = Category(user_id)
+        categories=cat_obj.get_user_categories_ids()
+    print("CATEGO:=",categories)
+
     # Create connection pool
     pool = sqlalchemy.create_engine(
         "mysql+pymysql://",
