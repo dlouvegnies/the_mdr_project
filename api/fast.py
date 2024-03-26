@@ -9,8 +9,10 @@ from ml_logic.params import  CATEGORIES_ID, CREDENTIAL_PATH
 from ml_logic.recommendation import get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
 from ml_logic.cache import Cache
+
 from datetime import datetime
 
+from ml_logic.category import Category
 
 
 def get_bigquery_client():
@@ -134,6 +136,53 @@ def login(user:dict):
                 "result": result.to_dict()}
     else:
         raise HTTPException(status_code=401, detail="This account is not exist")
+
+
+
+@app.get("/clear_one_user_cache")
+def clear_one_user_cache(user_id:int):
+    """
+    Clear the cache of one user
+    """
+    cache = Cache(user_id)
+    cache.clear_user_cache()
+
+
+@app.get("/get_categories_dict")
+def get_categories_dict():
+    """
+    Get the dict of all categories
+    """
+    cat_obj = Category(0)
+    return cat_obj.get_categories_dict()
+
+
+@app.get("/get_one_user_category")
+def get_one_user_category(user_id:int):
+    """
+
+    """
+    cat_obj = Category(user_id)
+    return cat_obj.get_user_categories()
+
+
+@app.post("/save_user_categories")
+def save_user_categories(user_id=int,category_list=list):
+    """
+
+    """
+    category_list = set(category_list.split(','))
+    print(f"--------Category LIST= {category_list}")
+    cat_obj = Category(user_id)
+    result=cat_obj.save_user_categories(category_list)
+    if result:
+        return {"message": "User categories saved successfully",
+                    "status_code": 200}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to save User categories")
+
+
+
 
 @app.get("/")
 def root():

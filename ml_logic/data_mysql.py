@@ -156,6 +156,25 @@ def db_to_dataframe(date=None, nb_rows=None):
     print("Embedding decoded")
     return result
 
+def execute_query_with_df_as_result(sql_query,params={}):
+    # create connection pool
+    pool = sqlalchemy.create_engine("mysql+pymysql://",creator=getconn)
+    db_conn = pool.connect()
+    with pool.connect() as db_conn :
+        result = pd.read_sql_query(sql_query, db_conn, params=params)
+    return result
+
+
+def execute_query_with_df_as_result_no_params(sql_query):
+    # create connection pool
+    pool = sqlalchemy.create_engine("mysql+pymysql://",creator=getconn)
+    db_conn = pool.connect()
+    with pool.connect() as db_conn :
+        result = pd.read_sql_query(sql_query, db_conn)
+    return result
+
+
+
 if __name__ == '__main__':
     date_to_retrieve_from = datetime(2024, 3, 18)
     news = db_to_dataframe(date=date_to_retrieve_from, nb_rows=1000)
