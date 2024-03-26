@@ -1,10 +1,12 @@
-FROM python:3.8.12-slim
+FROM python:3.10-slim
 
-COPY ml_logic ml_logic
+
 COPY api api
+COPY ml_logic ml_logic
 COPY requirements.txt requirements.txt
 COPY setup.py setup.py
 COPY credentials/the-mdr-project.json credentials/the-mdr-project.json
+COPY credentials/the-mdr-project-mysql.json credentials/the-mdr-project-mysql.json
 
 #RUN pip install -r requirements.txt
 RUN pip install -e .
