@@ -43,6 +43,7 @@ def get_random_news(user_id:int, categories:list=CATEGORIES_ID, nb_news:int=20):
                ROW_NUMBER() OVER(ORDER BY RAND()) AS rand_num
         FROM news_dataset
         WHERE category_id IN %(category_ids)s
+            AND image != ''
             AND news_id NOT IN (
                 SELECT news_id
                 FROM review_dataset
@@ -129,7 +130,7 @@ def db_to_dataframe(date=None, nb_rows=None):
     params = {}
     if date is not None:
         params['date']= date.strftime("%Y-%m-%d")
-        where_clause = "WHERE added_date > %(date)s" # Remettre le >=
+        where_clause = "WHERE added_date >= %(date)s" # Remettre le >=
     else:
         where_clause = ""
 
@@ -152,9 +153,27 @@ def db_to_dataframe(date=None, nb_rows=None):
         result = pd.read_sql_query(query, conn)
     print("DataFrame retrieve from MySQL")
     print(result)
-    result['embedding'] = result['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float32).tolist())
+    result['embedding'] = result['embedding'].apply(lambda x: np.frombuffer(x, dtype=np.float64).tolist())
     print("Embedding decoded")
+    print('LONGUEUR:', len(result.iloc[0]['embedding']))
     return result
+
+def reset_review_dataset(user_id:int):
+    pool = sqlalchemy.create_engine(
+        "mysql+pymysql://",
+        creator=getconn,
+    )
+    conn = pool.connect()
+
+    params={'user_id': user_id}
+
+    query = sqlalchemy.text("""
+            DELETE FROM review_dataset
+            WHERE user_id = :user_id
+            """)
+    conn.execute(query, parameters=params)
+    conn.commit()
+
 
 def execute_query_with_df_as_result(sql_query,params={}):
     # create connection pool
@@ -177,5 +196,4 @@ def execute_query_with_df_as_result_no_params(sql_query):
 
 if __name__ == '__main__':
     date_to_retrieve_from = datetime(2024, 3, 18)
-    news = db_to_dataframe(date=date_to_retrieve_from, nb_rows=1000)
-    print(news)
+    news = db_to_dataframe(nb_rows=1000)
