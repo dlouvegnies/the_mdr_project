@@ -32,6 +32,18 @@ def fetch_news_to_evaluate(user_id):
         st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
         return None
 
+def fetch_news_to_evaluate_with_bert(user_id, method):
+    api_url = os.path.join(base_url, 'get_one_reco_by_bert')
+    params = {'user_id': user_id, 'method': method}
+
+    response = requests.get(api_url, params=params)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
+        return None
+
 
 def save_learning_feedback(news, feedback, user_id):
     api_url = os.path.join(base_url, 'save_one_learning')
@@ -136,8 +148,10 @@ def display_learning(user_id):
 
 def display_recommendation(user_id):
     st.title("THE MDR PROJECT")
-
-    data = fetch_news_to_evaluate(user_id)
+    if st.session_state.model == 'tfidf':
+        data = fetch_news_to_evaluate(user_id)
+    else:
+        data = fetch_news_to_evaluate_with_bert(user_id, st.session_state['model'])
     if data:
         news = next(iter(data.values()))
         show_recommended_news(news)
