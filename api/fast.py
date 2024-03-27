@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 
 from ml_logic.data_mysql import get_random_news, save_feedback, db_to_dataframe, reset_review_dataset
 from ml_logic.params import  CREDENTIAL_PATH
-from ml_logic.recommendation import get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
+from ml_logic.recommendation import get_top_similar_news #get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
 from ml_logic.cache import Cache
 from ml_logic.cache_bert import Cache_Bert
@@ -14,8 +14,7 @@ from ml_logic.cache_bert import Cache_Bert
 from datetime import datetime
 
 from ml_logic.category import Category
-
-
+from ml_logic.search import encode_sentence
 
 def get_bigquery_client():
     # Charger les informations d'identification depuis le fichier de clé JSON
@@ -213,6 +212,19 @@ def save_user_category(user_id=int,category_id=int,on=int):
     else:
         raise HTTPException(status_code=500, detail="Failed to save User categories")
 
+@app.post("/search")
+def get_news_from_keywords(search:dict):
+    keywords = search['keywords']
+    keywords_embedded = encode_sentence(keywords)
+    recommendation_df = get_top_similar_news(keywords_embedded, news_df, num_recommendations=10)
+    recommendation_df.drop(columns=['embedding', 'news_id', 'category_id', 'sub_cat', 'added_date', 'image'], inplace=True)
+
+    if not recommendation_df.empty:
+        return {"message": "Feedback saved successfully",
+                "status_code": 200,
+                "result": recommendation_df.to_dict()}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to save feedback")
 
 
 

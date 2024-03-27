@@ -2,12 +2,13 @@ from google.cloud.sql.connector import Connector
 import sqlalchemy
 from sqlalchemy import text
 import pymysql
-from ml_logic.params import DB_SERVER,USER_DB,PASSWORD_DB,DB_NAME,CACHE_VALIDATION_DURATION
+from ml_logic.params import DB_SERVER, USER_DB, PASSWORD_DB, DB_NAME, CACHE_VALIDATION_DURATION
 import pandas as pd
 from ml_logic.model import Model
 import os
 import numpy as np
 from datetime import datetime,timedelta
+from ml_logic.category import Category
 
 from ml_logic.recommendation import get_top_similar_news
 from ml_logic.data_mysql import db_to_dataframe
@@ -189,4 +190,3 @@ if __name__ == "__main__":
     cache_test = Cache_Bert(3)
     cache_test.clear_all_caches()
     news_df = db_to_dataframe(nb_rows=1000) #db_to_dataframe(date=datetime(2024, 3, 26))
-    cache_test.create_bert_cache(news_df, categories=[], method='cosine')

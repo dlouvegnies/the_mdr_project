@@ -22,6 +22,7 @@ def login_page():
             st.success(f"Welcome {data_received['result']['username']['0']}, you are logged! 🫡")
             st.session_state['user_id'] = data_received['result']['user_id']['0']
             st.session_state['model'] = 'cosine'
+            st.session_state['index'] = 0
         else:
             st.error(f"Failed to login from API. Status code: {response.status_code}")
             return None
