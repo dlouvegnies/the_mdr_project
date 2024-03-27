@@ -23,7 +23,7 @@ def get_bigquery_client():
     return bigquery.Client(credentials=credentials, project=credentials.project_id)
 
 app = FastAPI()
-news_df = db_to_dataframe(date=datetime(2024, 3, 26))
+news_df = db_to_dataframe(date=datetime(2024, 3, 27))
 
 """
 To launch the server :
