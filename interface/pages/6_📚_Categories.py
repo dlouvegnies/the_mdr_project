@@ -4,7 +4,7 @@ import requests
 
 import os
 from params import SERVICE_URL, MODE, LOCAL_URL
-
+from account import clean_cache
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
@@ -66,6 +66,9 @@ else:
         if checkbox_value:
             #Coché
             save_user_categories_one(user_id,category_id,1)
+
         else:
             #décochée
             save_user_categories_one(user_id,category_id,0)
+
+    clean_cache()

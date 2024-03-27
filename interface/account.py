@@ -47,3 +47,15 @@ def signup_page():
         else:
             st.error(f"Failed to signup from API. Status code: {response.status_code}")
             return None
+
+def clean_cache():
+    api_url = os.path.join(base_url, 'clear_one_user_cache')
+    params = {'user_id': st.session_state['user_id']}
+
+    response = requests.get(api_url, params=params)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f"Failed to clear cache. Status code: {response.status_code}")
+        return None

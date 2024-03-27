@@ -149,6 +149,8 @@ def clear_one_user_cache(user_id:int):
     """
     cache = Cache(user_id)
     cache.clear_user_cache()
+    return {"message": "Cache clear",
+            "status_code": 200}
 
 
 @app.get("/get_categories_dict")

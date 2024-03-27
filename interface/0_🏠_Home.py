@@ -26,10 +26,11 @@ def add_logo():
         unsafe_allow_html=True,
     )
 
+
 def main():
     add_logo()
     if 'username' in st.session_state:
-        st.sidebar.write(st.session_state.username)
+        st.success("Raph")
     else:
         st.error("Mathieu")
 
@@ -48,8 +49,6 @@ def main():
     with col3:
         st.title("R")
         st.image("Raphael.jpeg")
-
-
 
 if __name__ == "__main__":
     main()
