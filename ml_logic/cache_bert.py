@@ -12,6 +12,7 @@ from ml_logic.category import Category
 
 from ml_logic.recommendation import get_top_similar_news
 from ml_logic.data_mysql import db_to_dataframe
+from ml_logic.category import Category
 
 class Cache_Bert:
 
