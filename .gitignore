@@ -6,9 +6,6 @@ models/*.pkl
 .toml
 notebooks/mysql.ipynb
 notebooks/mdp.ipynb
-Raphael.jpeg
-Denis.jpeg
-Mathieu.jpeg
 
 # OS generated files #
 ######################
