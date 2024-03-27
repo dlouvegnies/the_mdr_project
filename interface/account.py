@@ -21,6 +21,7 @@ def login_page():
             data_received = response.json()
             st.success(f"Welcome {data_received['result']['username']['0']}, you are logged! 🫡")
             st.session_state['user_id'] = data_received['result']['user_id']['0']
+            st.session_state['username'] = data_received['result']['username']['0']
             st.session_state['model'] = 'cosine'
             st.session_state['index'] = 0
         else:

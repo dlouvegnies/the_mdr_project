@@ -11,7 +11,7 @@ class Category:
     def __init__(self,user_id):
         self.user_id = user_id
         self.connector = Connector()
-        
+
         # function to return the database connection
     def getconn(self) -> pymysql.connections.Connection:
         conn: pymysql.connections.Connection = self.connector.connect(DB_SERVER,"pymysql",user=USER_DB,password=PASSWORD_DB,db=DB_NAME,charset='utf8mb4',collation='utf8mb4_unicode_ci')
@@ -83,6 +83,7 @@ class Category:
                     db_conn.execute(sql_query, parameters={"user_id":self.user_id,"category_id":category_id})
 
                 db_conn.commit()
+                db_conn.close()
                 return True
             except SQLAlchemyError:
                 return False
