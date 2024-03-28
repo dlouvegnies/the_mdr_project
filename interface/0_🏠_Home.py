@@ -13,13 +13,13 @@ def main():
     st.subheader("Our team is absolutely beautiful 😍")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.title("M")
+        st.title("Mathieu")
         st.image("Mathieu.jpeg")
     with col2:
-        st.title("D")
+        st.title("Denis")
         st.image("Denis.jpeg")
     with col3:
-        st.title("R")
+        st.title("Raphaël")
         st.image("Raphael.jpeg")
 
 if __name__ == "__main__":
