@@ -14,7 +14,7 @@ RUN mkdir raw_data
 
 
 # Local
-CMD uvicorn api.fast:app --host 0.0.0.0
+#CMD uvicorn api.fast:app --host 0.0.0.0
 
 # Production
-#CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
+CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
