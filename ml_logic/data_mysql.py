@@ -61,7 +61,7 @@ def get_random_news(user_id:int, categories:list=[], nb_news:int=20):
     FROM CombinedNews
     WHERE rand_num <= %(nb_news)s;
     """
-
+    # AND added_date >= %(date)s
     result = pd.read_sql_query(query, conn, params=params)
 
     conn.close()
