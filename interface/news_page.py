@@ -124,6 +124,7 @@ def show_recommended_news(news):
 
 def display_learning(user_id):
     st.title("👩‍🎓 What I like")
+    add_logo()
 
     if 'previous_news' not in st.session_state:
         st.session_state['previous_news'] = None
@@ -152,6 +153,7 @@ def display_learning(user_id):
 
 def display_recommendation(user_id):
     st.title("🤩 What I should like")
+    add_logo()
 
     if 'previous_news' not in st.session_state:
         st.session_state['previous_news'] = None
@@ -199,6 +201,7 @@ def reset_user_profile(user_id):
 
 def search_page():
     st.title("🔍 Search")
+    add_logo()
     # Formulaire d'inscription
     keywords = st.text_area('Find a news from keywords')
     if st.button("Search"):

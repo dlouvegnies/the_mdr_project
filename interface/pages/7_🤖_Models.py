@@ -1,6 +1,6 @@
 import streamlit as st
 from account import clean_cache
-
+from news_page import add_logo
 
 
 if 'user_id' not in st.session_state:
@@ -15,7 +15,7 @@ if 'user_id' not in st.session_state:
     st.stop()
 else:
     st.title("🤖 Models")
-
+    add_logo()
     models = st.radio('Select a model that fits your needs', ('Auto',
                                         'TFIDF Vectorizer & NearestNeighbors',
                                         'CamemBERT & Cosine Similarity',

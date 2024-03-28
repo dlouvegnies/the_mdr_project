@@ -3,11 +3,14 @@ import requests
 from datetime import datetime
 import os
 from params import SERVICE_URL, MODE, LOCAL_URL
+from news_page import add_logo
+
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
 def login_page():
     st.title("🧑‍💻 Login")
+    add_logo()
     # Formulaire de connexion
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -31,6 +34,7 @@ def login_page():
 # Fonction pour la page d'inscription
 def signup_page():
     st.title("📄 Sign Up")
+    add_logo()
     # Formulaire d'inscription
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")

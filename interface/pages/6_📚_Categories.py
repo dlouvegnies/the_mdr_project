@@ -5,6 +5,7 @@ import requests
 import os
 from params import SERVICE_URL, MODE, LOCAL_URL
 from account import clean_cache
+from news_page import add_logo
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
@@ -47,6 +48,7 @@ if 'user_id' not in st.session_state:
 else:
 
     st.title("📚 Categories")
+    add_logo()
     df_categories = pd.DataFrame(get_categories(st.session_state.user_id))
     #print(df_categories)
     # Afficher les cases à cocher pour chaque catégorie
