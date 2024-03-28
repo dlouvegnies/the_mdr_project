@@ -12,5 +12,4 @@ if 'user_id' not in st.session_state:
 
     st.stop()
 else:
-    st.write(st.session_state["user_id"])
     display_recommendation(st.session_state.user_id)

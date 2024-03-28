@@ -105,7 +105,7 @@ class Cache_Bert:
             JOIN news_dataset n
             ON r.news_id = n.news_id
             WHERE r.user_id = %(user_id)s
-            AND category_id IN %(category_ids)s
+            AND n.category_id IN %(category_ids)s
             AND (r.like_the_news = TRUE OR r.good_recommendation = TRUE)
             ORDER BY r.updated_date DESC, n.added_date DESC
             """
@@ -127,7 +127,8 @@ class Cache_Bert:
             for index, row in liked_news_df.head(15).iterrows():
                 embedding_array = np.frombuffer(row['embedding'], dtype=np.float64)
                 recommendation_df = get_top_similar_news(embedding_array, news_df, num_recommendations=3, method=method)
-                print(recommendation_df)
+                print('liked', row['title'], row['news_id'])
+                print('reco', recommendation_df['title'])
                 list_reco.append(recommendation_df)
             merged_recommendations = pd.concat(list_reco, ignore_index=True)
             merged_recommendations.drop_duplicates(subset=['news_id'], inplace=True)

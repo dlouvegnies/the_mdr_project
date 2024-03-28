@@ -31,3 +31,8 @@ DB_SERVER=os.environ.get('DB_SERVER')
 USER_DB=os.environ.get('USER_DB')
 PASSWORD_DB=os.environ.get('PASSWORD_DB')
 DB_NAME=os.environ.get('DB_NAME')
+
+##################  DF CACHED FAST API #####################
+DAY=int(os.environ.get('DAY'))
+MONTH=int(os.environ.get('MONTH'))
+YEAR=int(os.environ.get('YEAR'))

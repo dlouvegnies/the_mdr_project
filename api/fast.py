@@ -5,7 +5,7 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 
 from ml_logic.data_mysql import get_random_news, save_feedback, db_to_dataframe, reset_review_dataset
-from ml_logic.params import  CREDENTIAL_PATH
+from ml_logic.params import  CREDENTIAL_PATH, DAY, MONTH, YEAR
 from ml_logic.recommendation import get_top_similar_news #get_one_reco_by_last_liked, get_one_reco_by_last_liked_with_bert
 from ml_logic.user_mysql import create_user, connect_user
 from ml_logic.cache import Cache
@@ -23,7 +23,7 @@ def get_bigquery_client():
     return bigquery.Client(credentials=credentials, project=credentials.project_id)
 
 app = FastAPI()
-news_df = db_to_dataframe(date=datetime(2024, 3, 27))
+news_df = db_to_dataframe(date=datetime(YEAR, MONTH, DAY))
 
 """
 To launch the server :

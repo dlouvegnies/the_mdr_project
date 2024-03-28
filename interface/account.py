@@ -7,7 +7,7 @@ from params import SERVICE_URL, MODE, LOCAL_URL
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
 
 def login_page():
-    st.title("Login")
+    st.title("🧑‍💻 Login")
     # Formulaire de connexion
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -30,7 +30,7 @@ def login_page():
 
 # Fonction pour la page d'inscription
 def signup_page():
-    st.title("Sign Up")
+    st.title("📄 Sign Up")
     # Formulaire d'inscription
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")

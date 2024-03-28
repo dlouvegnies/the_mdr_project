@@ -5,7 +5,6 @@ import re
 import os
 from params import SERVICE_URL, MODE, LOCAL_URL
 import pandas as pd
-from webbrowser import open_new_tab
 
 
 base_url = SERVICE_URL if MODE == 'SERVICE' else LOCAL_URL
@@ -112,51 +111,62 @@ def show_random_news(data):
 
 
 def show_recommended_news(news):
-        st.write(f"**News ID:** {news['news_id']}")
         st.subheader('News 📰')
         st.write(f"**Title:** {news['title']}")
         st.write("**Description:**")
         st.write(clean_html_tags(news['description']))
-        st.write("**Link:**")
-        st.write(news['link'])
-        st.write("**Image:**")
+
         if news['image']:
             st.image(news['image'], width=300)
         else:
             st.image("https://cdn.generationvoyage.fr/2020/04/journaux-britanniques-et-am%C3%A9ricains-768x421.jpg",width=400)
-
+        st.link_button('Click here to see the news', news['link'])
 
 def display_learning(user_id):
-    st.title("THE MDR PROJECT")
+    st.title("👩‍🎓 What I like")
+
+    if 'previous_news' not in st.session_state:
+        st.session_state['previous_news'] = None
+    else:
+        st.session_state.previous_news = st.session_state.current_news
 
     data = fetch_news_to_learn(user_id)
+    st.session_state['current_news'] = data
     if data:
         show_random_news(data)
 
         col1, col2 = st.columns(2)
         with col1:
-            thumb_up = st.button("👍 I'm interested", )
+            thumb_up = st.button("👍 I'm interested")
         with col2:
             thumb_down = st.button("👎 I'm not interested")
 
         if thumb_up:
             st.success("You were interested in this news.")
-            test = save_learning_feedback(data, True, user_id)
-            st.write(test)
+            save_learning_feedback(st.session_state.previous_news, True, user_id)
 
         elif thumb_down:
             st.error("You weren't interested in this news.")
-            save_learning_feedback(data, False, user_id)
+            save_learning_feedback(st.session_state.previous_news, False, user_id)
 
 
 def display_recommendation(user_id):
-    st.title("THE MDR PROJECT")
+    st.title("🤩 What I should like")
+
+    if 'previous_news' not in st.session_state:
+        st.session_state['previous_news'] = None
+    else:
+        st.session_state.previous_news = st.session_state.current_news
+
     if st.session_state.model == 'tfidf':
         data = fetch_news_to_evaluate(user_id)
     else:
         data = fetch_news_to_evaluate_with_bert(user_id, st.session_state['model'])
+
+
     if data:
         news = next(iter(data.values()))
+        st.session_state['current_news'] = news
         show_recommended_news(news)
 
         col1, col2 = st.columns(2)
@@ -167,12 +177,13 @@ def display_recommendation(user_id):
 
         if thumb_up:
             st.success("You were interested in this news.")
-            test = save_recommendation_feedback(news, True, user_id)
-            st.write(test)
+            save_recommendation_feedback(st.session_state.previous_news, True, user_id)
 
         elif thumb_down:
             st.error("You weren't interested in this news.")
-            save_recommendation_feedback(news, False, user_id)
+            save_recommendation_feedback(st.session_state.previous_news, False, user_id)
+
+
 
 def reset_user_profile(user_id):
     api_url = os.path.join(base_url, 'reset')
@@ -187,9 +198,9 @@ def reset_user_profile(user_id):
         return None
 
 def search_page():
-    st.title("Find a news from keywords")
+    st.title("🔍 Search")
     # Formulaire d'inscription
-    keywords = st.text_area('Define your keywords')
+    keywords = st.text_area('Find a news from keywords')
     if st.button("Search"):
         api_url = os.path.join(base_url, 'search')
         data = {'keywords': keywords}
@@ -212,3 +223,29 @@ def search_page():
         else:
             st.error(f"Failed to fetch data from API. Status code: {response.status_code}")
             return None
+
+def add_logo():
+    st.markdown(
+        """
+        <style>
+            [data-testid="stSidebarNav"] {
+                background-image: url(https://www.louvegnies.com/mdr/Logo-removebg.png);
+                background-repeat: no-repeat;
+                padding-top: 120px;
+                background-position: 60px 20px;
+                background-size: contain;
+                max-width: 330px;
+                max-height: 200px;
+            }
+            [data-testid="stSidebarNav"]::before {
+                content: "The MDR Project";
+                margin-left: 20px;
+                margin-top: 20px;
+                font-size: 30px;
+                position: relative;
+                top: 100px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )

@@ -46,11 +46,11 @@ if 'user_id' not in st.session_state:
     st.stop()
 else:
 
-    st.subheader("Select the categories you like")
+    st.title("📚 Categories")
     df_categories = pd.DataFrame(get_categories(st.session_state.user_id))
     #print(df_categories)
     # Afficher les cases à cocher pour chaque catégorie
-    st.write("Sélectionnez les catégories :")
+    st.write("Select the categories you like :")
 
 
     for index, row in df_categories.iterrows():
