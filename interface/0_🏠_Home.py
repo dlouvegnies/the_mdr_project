@@ -5,10 +5,6 @@ from news_page import add_logo
 
 def main():
     add_logo()
-    if 'username' in st.session_state:
-        st.success("Raph")
-    else:
-        st.error("Mathieu")
 
     st.title("THE MDR PROJECT 🤣")
 
